@@ -245,7 +245,7 @@ public class CppClass {
     public void removeLineOfCode(String keywords) {
         Matcher m = getLineOfCodeMatcher(cppBody, keywords);
         while (m.find()) {
-            cppBody = Utils.replaceSubString(cppBody, m.start(), m.end(), "");
+            cppBody = Utils.replaceSubString(cppBody, m.start(), m.end() + 2, "");
             m = getLineOfCodeMatcher(cppBody, keywords);
         }
     }

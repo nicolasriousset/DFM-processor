@@ -1,21 +1,27 @@
 package main;
 
 import java.io.File;
-
-import conversion.*;
-import conversion.condition.PropertyValueIsNullOrEquals;
-
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-import com.google.common.io.Files;
 import com.google.common.io.PatternFilenameFilter;
 
-import cpp.*;
+import conversion.AConversionRule;
+import conversion.AddInclude;
+import conversion.ChangeBaseClass;
+import conversion.ChangeObjectType;
+import conversion.ChangePropertyValue;
+import conversion.CompositeRule;
+import conversion.RemoveLineOfCode;
+import conversion.RestyleBoutonFermer;
+import conversion.RestyleForm;
+import conversion.condition.PropertyValueIsNullOrEquals;
+import cpp.CppClass;
 import cpp.CppClass.CppFile;
+import cpp.CppClassReaderWriter;
+import cpp.CppClassReaderWriterException;
+import cpp.Utils;
 import dfm.DfmObject;
 import dfm.DfmReaderWriter;
 import dfm.DfmReaderWriterException;
@@ -106,7 +112,8 @@ public class RhUiModernizer {
         rules.add(new RemoveLineOfCode("GetSystemMenu(Handle"));
         rules.add(new RemoveLineOfCode("RemoveMenu"));
         rules.add(new RemoveLineOfCode("center_win"));
-        rules.add(new RemoveLineOfCode("wPrinc->Width/2"));        
+        rules.add(new RemoveLineOfCode("wPrinc->Width/2"));
+        rules.add(new RemoveLineOfCode("wPrinc->Height/2"));        
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
