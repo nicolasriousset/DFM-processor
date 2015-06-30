@@ -1,7 +1,5 @@
 package conversion;
 
-import java.util.regex.Pattern;
-
 import cpp.CppClass;
 import dfm.DfmObject;
 

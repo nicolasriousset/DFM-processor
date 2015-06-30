@@ -26,18 +26,46 @@ public class RhUiModernizer {
     public RhUiModernizer() {
     }
 
-    public void run(String folder, String dfmFiles) {
+    private String fileMaskToRegEx(String fileMask) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("(?i)");
+        for (char ch : fileMask.toCharArray()) {
+            switch (ch) {
+            case '*':
+                builder.append(".*");
+                break;
+            case '?':
+                builder.append(".");
+                break;
+            default:
+                if (!Character.isLetterOrDigit(ch))
+                    builder.append("\\");
+                builder.append(ch);
+            }            
+        }
+        builder.append("(?-i)");
+        String regex = builder.toString();
+        return regex;
+    }
+    
+    public void run(File fileMask) {
         try {
-            Path outputFileName = Paths.get(folder, "processedDfms.txt");
-            File inputDirectory = new File(folder);
-            PatternFilenameFilter dfmFileFilter = new PatternFilenameFilter(".*\\.dfm");
+
+            File inputDirectory;
+            String fileNameFilter;
+            if (fileMask.isDirectory()) {
+                inputDirectory = fileMask;
+                fileNameFilter = fileMaskToRegEx("*.dfm");
+            } else {
+                inputDirectory = new File(fileMask.getParent());
+                fileNameFilter = fileMaskToRegEx(fileMask.getName());
+            }
+            PatternFilenameFilter dfmFileFilter = new PatternFilenameFilter(fileNameFilter);
             File[] inputFiles = inputDirectory.listFiles(dfmFileFilter);
             if (inputFiles == null) {
-                throw new IOException("Could not find input *.pos files in " + folder);
+                throw new IOException("Could not find input files : " + fileMask.getAbsolutePath());
             }
             log.info("Found " + inputFiles.length + " input files");
-            File outputFile = new File(outputFileName.toString());
-            Files.createParentDirs(outputFile);
             for (File dfmFile : inputFiles) {
                 ProcessDfm(dfmFile);
             }
