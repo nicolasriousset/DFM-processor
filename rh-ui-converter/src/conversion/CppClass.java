@@ -10,8 +10,10 @@ public class CppClass {
     private String cppHeader;
     private String className;
     private String baseClassName;
-    
-    public enum CppFile {HEADER, BODY};
+
+    public enum CppFile {
+        HEADER, BODY
+    };
 
     public CppClass(String aCppHeader, String aCppBody) throws CppClassReaderWriterException {
         cppBody = aCppBody;
@@ -27,8 +29,11 @@ public class CppClass {
         Matcher m = p.matcher(cppFile == CppFile.HEADER ? cppHeader : cppBody);
         return m.find();
     }
-    
+
     public boolean addHeader(CppFile cppFile, String header) {
+        if (includesHeader(cppFile, header))
+            return true;
+        
         // dans la regexp, (?m) active le mode multiligne, pour que ^ et $ matchent les débuts et fins de chaque ligne
         header = StringUtils.strip(header, "\"<>");
         Pattern p = Pattern.compile("(?m)^\\s*#include\\s+[<\"]\\S+[>\"]$");
@@ -37,12 +42,12 @@ public class CppClass {
         while (m.find()) {
             endOfLastHeader = m.end();
         }
-        
+
         if (cppFile == CppFile.HEADER)
             cppHeader = Utils.replaceSubString(cppHeader, endOfLastHeader, endOfLastHeader, String.format("\r\n#include \"%s\"", header));
         else
             cppBody = Utils.replaceSubString(cppBody, endOfLastHeader, endOfLastHeader, String.format("\r\n#include \"%s\"", header));
-        
+
         return true;
     }
 
@@ -170,10 +175,10 @@ public class CppClass {
         addOrAppendToMethod("ApplyStyle", "bool useLegacyUI", instructions, "    TFormExtented::ApplyStyle(useLegacyUI);");
     }
 
-    public void renameBaseClass(String newBaseClass) throws CppClassReaderWriterException {
-        if (baseClassName == newBaseClass)
+    public void changeBaseClass(String newBaseClass) throws CppClassReaderWriterException {
+        if (baseClassName.compareTo(newBaseClass) == 0)
             return;
-        
+
         // Modification du type de base dans le header C++
         Matcher m = getClassNameAndTypeMatcher();
         if (!m.find())
@@ -183,7 +188,7 @@ public class CppClass {
         int baseClassStart = m.start(baseClassGroup);
         int baseClassEnd = m.end(baseClassGroup);
         cppHeader = Utils.replaceSubString(cppHeader, baseClassStart, baseClassEnd, newBaseClass);
-        
+
         // Modification de l'appel au constructeur hérité dans le body C++
         Pattern p = Pattern.compile(String.format("(?m)^.*%s\\s*::\\s*%s\\(.*\\)\\s*:\\s*(\\w*)", className, className));
         m = p.matcher(cppBody);
@@ -192,11 +197,9 @@ public class CppClass {
             baseClassEnd = m.end(1);
             cppBody = Utils.replaceSubString(cppBody, baseClassStart, baseClassEnd, newBaseClass);
         }
-        
-        
 
     }
-    
+
     public String getBaseClassName() {
         return baseClassName;
     }
@@ -204,5 +207,27 @@ public class CppClass {
     public String getClassName() {
         return className;
     }
+
+    public Matcher getMemberVariableMatcher(String variableName) {
+        Pattern p = Pattern.compile(String.format("(?m)^\\s*(\\S*)\\s*\\*?(%s)\\s*;$", variableName));
+        return p.matcher(cppHeader);
+    }
+
+    public String getMemberVariableType(String variableName) throws CppClassReaderWriterException {
+        Matcher m = getMemberVariableMatcher(variableName);
+        if (!m.find()) {
+            throw new CppClassReaderWriterException(String.format("Failed to find variable '%s' declaration", variableName));
+        }
+        
+        return cppHeader.substring(m.start(1), m.end(1));
+    }
     
+    public void changeMemberVariableType(String variableName, String newTypeName) throws CppClassReaderWriterException {
+        Matcher m = getMemberVariableMatcher(variableName);
+        if (!m.find()) {
+            throw new CppClassReaderWriterException(String.format("Failed to find variable '%s' declaration", variableName));
+        }
+        
+        cppHeader = Utils.replaceSubString(cppHeader, m.start(1), m.end(1), newTypeName);
+    }
 }

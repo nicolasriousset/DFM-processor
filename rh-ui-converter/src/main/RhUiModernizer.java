@@ -44,7 +44,9 @@ public class RhUiModernizer {
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
         rules.add(new RestyleBoutonFermerRule());
         rules.add(new RestyleFormRule());
-        rules.add(new CompositeRule().addRule(new RenameBaseClassRule("TFormExtented")).addRule(new AddIncludeRule(CppFile.HEADER, "def_tform.h")));
+        rules.add(new CompositeRule().addRule(new ChangeBaseClassRule("TFormExtented")).addRule(new AddIncludeRule(CppFile.HEADER, "def_tform.h")));
+        rules.add(new CompositeRule().addRule(new ChangeObjectTypeRule("TEdit", "TColoredEdit")).addRule(new AddIncludeRule(CppFile.HEADER, "ColoredEdit.h")));
+        rules.add(new ChangePropertyValueRule("TColoredEdit", "Height", "24"));
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);

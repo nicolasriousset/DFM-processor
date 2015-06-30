@@ -15,7 +15,7 @@ public class AddIncludeRule extends AConversionRule {
     
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
-        return !cppClass.includesHeader(dest, newHeader);
+        return true;
     }
 
     @Override

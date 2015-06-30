@@ -1,6 +1,7 @@
 package conversion.rules;
 
 import conversion.CppClass;
+import conversion.CppClass.CppFile;
 import conversion.CppClassReaderWriterException;
 import conversion.Utils;
 import main.DfmObject;
@@ -108,10 +109,10 @@ public class RestyleBoutonFermerRule extends AConversionRule {
 
             dfmObject.getProperties().put("Glyph.Data", glyph);
 
-            cppClass.appendToApplyStyleMethod("    ImageManager::GetInstance().LoadBitmap(" + dfmObject.getName() + "->Glyph, ImageManager::IMG_FERMER));");
-            return true;
+            cppClass.appendToApplyStyleMethod("    ImageManager::GetInstance().LoadBitmap(" + dfmObject.getName() + "->Glyph, ImageManager::IMG_FERMER);");
+            cppClass.addHeader(CppFile.BODY, "ImageManager.h");
+            return true; 
         } catch (CppClassReaderWriterException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return false;
         }
