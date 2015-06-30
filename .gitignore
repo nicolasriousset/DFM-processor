@@ -44,3 +44,4 @@ Temporary Items
 *.class
 RemoteSystemsTempFiles/
 rh-ui-converter/target/
+.metadata/
