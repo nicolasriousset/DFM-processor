@@ -2,6 +2,8 @@ package main;
 
 import java.io.File;
 import conversion.*;
+import conversion.CppClass.CppFile;
+import conversion.rules.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -39,11 +41,12 @@ public class RhUiModernizer {
     }
 
     private void updateDfm(DfmObject dfmObject, CppClass cppClass) {
-        ArrayList<AConversionRule> conversionRules = new ArrayList<AConversionRule>();
-        conversionRules.add(new BoutonFermerStyleRule());
-        conversionRules.add(new FormStyleRule());
+        ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
+        rules.add(new RestyleBoutonFermerRule());
+        rules.add(new RestyleFormRule());
+        rules.add(new CompositeRule().addRule(new RenameBaseClassRule("TFormExtented")).addRule(new AddIncludeRule(CppFile.HEADER, "def_tform.h")));
 
-        for (AConversionRule rule : conversionRules) {
+        for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
         }
 

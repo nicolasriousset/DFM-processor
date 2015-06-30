@@ -5,7 +5,7 @@ import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 
 public class Utils {
-    static String add(String sVal, int increment) {
+    public static String add(String sVal, int increment) {
         int val = 0;
         if (sVal != null && !sVal.isEmpty())
             val = Integer.parseInt(sVal);
@@ -17,5 +17,9 @@ public class Utils {
         if (!newExtension.startsWith("."))
             newExtension = "." + newExtension;  
         return new File(FilenameUtils.removeExtension(inputfile.getAbsolutePath()) + newExtension);
+    }
+    
+    public static String replaceSubString(String str, int from, int to, String replacement) {
+        return str.substring(0, from) + replacement + str.substring(to);
     }
 }

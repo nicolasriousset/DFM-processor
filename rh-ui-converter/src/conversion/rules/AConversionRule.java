@@ -1,22 +1,24 @@
-package conversion;
+package conversion.rules;
 
 import java.util.logging.Logger;
+
+import conversion.CppClass;
 
 import main.DfmObject;
 
 public abstract class AConversionRule {
     static Logger log = Logger.getLogger(AConversionRule.class.getName());
     
-    public void apply(DfmObject dfmObject, CppClass cppClass) {
+    public boolean apply(DfmObject dfmObject, CppClass cppClass) {
         if (!isApplicable(dfmObject, cppClass))
-            return;
+            return false;
 
         log.info("Applying " + this.getClass().getName());
-        doApply(dfmObject, cppClass);
+        return doApply(dfmObject, cppClass);
     }
 
     abstract public boolean isApplicable(DfmObject dfmObject, CppClass cppClass);
 
-    abstract protected void doApply(DfmObject dfmObject, CppClass cppClass);
+    abstract protected boolean doApply(DfmObject dfmObject, CppClass cppClass);
 
 }

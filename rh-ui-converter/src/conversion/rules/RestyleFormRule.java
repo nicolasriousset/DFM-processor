@@ -1,8 +1,10 @@
-package conversion;
+package conversion.rules;
 
+import conversion.CppClass;
+import conversion.Utils;
 import main.DfmObject;
 
-public class FormStyleRule extends AConversionRule {
+public class RestyleFormRule extends AConversionRule {
 
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
@@ -13,7 +15,7 @@ public class FormStyleRule extends AConversionRule {
     }
 
     @Override
-    protected void doApply(DfmObject dfmObject, CppClass cppClass) {
+    protected boolean doApply(DfmObject dfmObject, CppClass cppClass) {
         dfmObject.getProperties().put("Color", "clWhite");
         dfmObject.getProperties().put("Font.Charset", "ANSI_CHARSET");
         dfmObject.getProperties().put("Font.Color", "clGray");
@@ -23,6 +25,8 @@ public class FormStyleRule extends AConversionRule {
         dfmObject.getProperties().put("Font.Style", "[]");
         dfmObject.getProperties().put("Constraints.MinHeight", Utils.add(dfmObject.getProperties().get("ClientHeight"), 39));
         dfmObject.getProperties().put("Constraints.MinWidth", Utils.add(dfmObject.getProperties().get("ClientWidth"), 16));
+        
+        return true;
     }
 
 }
