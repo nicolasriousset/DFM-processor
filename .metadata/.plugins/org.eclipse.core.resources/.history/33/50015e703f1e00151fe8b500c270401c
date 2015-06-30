@@ -1,5 +1,0 @@
-package conversion;
-
-public interface IConversionRule {
-    public void apply(DfmObject dfmObject);
-}

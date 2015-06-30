@@ -1,8 +1,0 @@
-public class DfmObject {
-    String name;
-    String type;
-    
-    public getName() {
-        return name;
-    }
-}

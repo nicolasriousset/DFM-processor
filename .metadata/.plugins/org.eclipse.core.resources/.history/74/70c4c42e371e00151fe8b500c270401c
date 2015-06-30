@@ -1,5 +1,0 @@
-public interface ConversionRule {
-    public void apply(DfmObject dfmObject) {
-
-    }
-}

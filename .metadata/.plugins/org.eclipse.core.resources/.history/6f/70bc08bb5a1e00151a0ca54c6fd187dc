@@ -1,8 +1,0 @@
-package main;
-
-public class CppClassReaderWriterException extends Exception {
-    CppClassReaderWriterException(String message)
-    {
-    }
-    }
-}
