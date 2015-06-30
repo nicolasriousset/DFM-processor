@@ -1,0 +1,36 @@
+package conversion;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class CppClassReaderWriter {
+    public CppClass read(File headerFile, File cppFile) throws IOException, CppClassReaderWriterException {
+        return new CppClass(readFile(headerFile.getAbsolutePath()), readFile(cppFile.getAbsolutePath()));
+    }
+
+    public void write(CppClass cppClass, File aHeaderFile, File aCppFile) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aHeaderFile.getAbsolutePath()), StandardCharsets.UTF_8, StandardOpenOption.CREATE)) {
+            writer.write(text);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }        
+        
+        Files.write( Paths.get(aHeaderFile.getAbsolutePath()), cppClass.getCppHeader().toCharArray());
+        Files.write(Paths.get(aCppFile.getAbsolutePath()), cppClass.getCppHeader().toCharArray());
+    }
+
+
+    private String readFile(String file) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(file));
+        return new String(encoded);
+    }
+}

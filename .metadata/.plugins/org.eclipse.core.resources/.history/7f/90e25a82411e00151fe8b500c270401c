@@ -1,0 +1,19 @@
+package conversion;
+
+import main.DfmObject;
+
+public class FormStyleRule extends AConversionRule {
+
+    @Override
+    public boolean isApplicable(DfmObject dfmObject) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    protected void doApply(DfmObject dfmObject) {
+        // TODO Auto-generated method stub
+
+    }
+
+}

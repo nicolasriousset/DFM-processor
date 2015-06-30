@@ -1,0 +1,5 @@
+public class DfmObject {
+    DfmParserException(String message) {
+        super(message);
+    }
+}

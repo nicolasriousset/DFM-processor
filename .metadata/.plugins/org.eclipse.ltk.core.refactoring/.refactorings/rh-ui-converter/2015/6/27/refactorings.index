@@ -1,0 +1,29 @@
+1435564890219	Rename type 'DfmParserException'
+1435565621321	Rename type 'ConversionRule'
+1435565796400	Rename type 'DfmObjectConversionRule'
+1435565806166	Rename type 'ConversionRule'
+1435569109018	Copy compilation unit
+1435569112426	Copy compilation unit
+1435569204407	Copy compilation units
+1435569211875	Copy compilation units
+1435569220047	Delete element
+1435569226467	Delete element
+1435569232499	Delete element
+1435569292080	Copy compilation units
+1435569297414	Delete element
+1435569299648	Delete element
+1435569300976	Delete element
+1435569302117	Delete element
+1435569303320	Delete element
+1435569500791	Rename type 'BoutonFermerConversionRule'
+1435569576915	Rename type 'IConversionRule'
+1435579222617	Rename type 'CppClass'
+1435581365049	Move compilation units
+1435582151503	Rename method 'updateDfmObject'
+1435582959171	Rename method 'addToApplyStyleMethod'
+1435584948152	Rename field 'cppText'
+1435584958389	Rename field 'headerText'
+1435586771332	Rename method 'getMatcher'
+1435586882494	Rename method 'doAppendToMethod'
+1435593173982	Rename local variable 'aHeaderFile'
+1435593186311	Rename local variable 'aCppFile'

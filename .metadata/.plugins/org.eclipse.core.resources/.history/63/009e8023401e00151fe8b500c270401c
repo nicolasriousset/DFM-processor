@@ -1,0 +1,15 @@
+package conversion;
+
+import main.DfmObject;
+
+public abstract class AConversionRule {
+    public void apply(DfmObject dfmObject) {
+        if (!isApplicable(dfmObject))
+            return;
+        
+        doApply(dfmObject);
+    }
+    
+    abstract public isApplicable(dfmObject);
+    
+}

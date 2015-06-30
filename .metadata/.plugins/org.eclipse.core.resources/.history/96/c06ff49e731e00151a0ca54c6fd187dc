@@ -1,0 +1,123 @@
+package conversion;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.security.auth.login.Configuration.Parameters;
+
+import org.apache.commons.lang3.StringUtils;
+
+public class CppClass {
+    private String cppBody;
+    private String cppHeader;
+    private String className;
+
+    public CppClass(String aCppHeader, String aCppBody) throws CppClassReaderWriterException {
+        cppBody = aCppBody;
+        cppHeader = aCppHeader;
+        parseClassName();
+    }
+
+    void parseClassName() throws CppClassReaderWriterException {
+        // dans la regexp, (?m) active le mode multiligne, pour pouvoir matcher des lignes
+        Pattern p = Pattern.compile("(?m)^ *class ([^ ]+) *: public .*$");
+        Matcher m = p.matcher(cppHeader);
+        if (m.find())
+            className = m.group(1);
+        else
+            throw new CppClassReaderWriterException("Unable to identify class name");
+    }
+
+    public Matcher getCppBodyMethodMatcher(String methodName) {
+        String regEx = String.format("(?m) *(void.*%s *:: *%s\\(.*\\))", className, methodName);        
+        Pattern p = Pattern.compile(regEx);
+        Matcher m = p.matcher(cppBody);
+        return m;
+    }
+
+    public boolean containsMethod(String methodName) {
+        return getCppBodyMethodMatcher(methodName).find();
+    }
+
+    public void doAddMethodToCppHeader(String methodName, String parameters) throws CppClassReaderWriterException {
+        Pattern p = Pattern.compile("(?m)^ *public:.*$");
+        Matcher m = p.matcher(cppHeader);
+        if (m.find()) {
+            int insertPos = m.end();
+            StringUtils.strip(parameters, "()");
+            String methodSignature = String.format("\r\n    void %s(%s);", methodName, parameters);
+            cppHeader = cppHeader.substring(0, insertPos) + methodSignature + cppHeader.substring(insertPos);
+        } else {
+            throw new CppClassReaderWriterException(String.format("Unable to locate a palce to insert method %s in class %s" + methodName, className));
+        }
+    }
+
+    public void doAddMethodToCppBody(String methodName, String parameters, String body) throws CppClassReaderWriterException {
+        String methodBody = String.format("\r\nvoid %s::%s(%s) {\r\n%s\r\n}", className, methodName, parameters, body);
+        cppBody += methodBody;
+    }
+
+    public void doAddMethod(String methodName, String parameters, String body) throws CppClassReaderWriterException {
+        doAddMethodToCppHeader(methodName, parameters);
+        doAddMethodToCppBody(methodName, parameters, body);
+    }
+
+    public void addMethod(String methodName, String parameters, String body) throws CppClassReaderWriterException {
+        if (containsMethod(methodName))
+            throw new CppClassReaderWriterException(String.format("La méthode %s::%s existe déjà", className, methodName));
+        doAddMethod(methodName, parameters, body);
+    }
+
+    public void doAppendToMethodBody(String methodName, String instructions) throws CppClassReaderWriterException {
+        Matcher m = getCppBodyMethodMatcher(methodName);
+        if (m.find()) {
+            String methodSignature = m.group(1); 
+            String currentBody = parseMethodMody(cppBody, m.end());
+            cppBody = cppBody.substring(0, m.start()) + "\r\n" + methodSignature + "{\r\n" + currentBody + "\r\n" + instructions + "\r\n}\r\n" + cppBody.substring(m.end());
+        } else {
+            throw new CppClassReaderWriterException(String.format("Unable to find the method %s in class %s" + methodName, className));
+        }
+    }
+
+    private String parseMethodBody(String cppBody, int from) throws CppClassReaderWriterException {        
+        int nestingLevel = 0;        
+        for (int i = from; i < cppBody.length() && nestingLevel == 0; ++i) {
+            if (Character.isWhitespace(cppBody.charAt(i))) 
+                continue;
+            if (cppBody.charAt(i) != '{')
+                throw new CppClassReaderWriterException("Method body doesn't start with '{' after position " + String.valueOf(from));
+            nestingLevel = 1;
+            from = i;
+        }
+        int to = from;
+        for (to = from; to < cppBody.length() && nestingLevel > 0; ++to) {
+            if (cppBody.charAt(to) == '{')
+                nestingLevel++;
+            else if (cppBody.charAt(to) == '}')
+                nestingLevel--;
+            
+        }
+        
+        if (nestingLevel > 0)
+            throw new CppClassReaderWriterException("Method body doesn't end '{' after position " + String.valueOf(from));
+        
+        return cppBody.substring(from + 1, to - 1);
+    }
+
+    public void appendToMethod(String methodName, String instructions) throws CppClassReaderWriterException {
+        if (!containsMethod(methodName))
+            throw new CppClassReaderWriterException(String.format("La méthode %s::%s n'existe pas", className, methodName));
+        doAppendToMethodBody(methodName, instructions);
+    }
+
+    public void addOrAppendToMethod(String methodName, String parameters, String body, String bodyPrefix) throws CppClassReaderWriterException {
+        if (containsMethod(methodName))
+            doAppendToMethodBody(methodName, body);
+        else
+            doAddMethod(methodName, parameters, bodyPrefix + "\r\n" + body);
+    }
+
+    public void appendToApplyStyleMethod(String instructions) throws CppClassReaderWriterException {
+        addOrAppendToMethod("ApplyStyle", "bool useLegacyUI", instructions, "TFormExtented::ApplyStyle(useLegacyUI);");
+    }
+}

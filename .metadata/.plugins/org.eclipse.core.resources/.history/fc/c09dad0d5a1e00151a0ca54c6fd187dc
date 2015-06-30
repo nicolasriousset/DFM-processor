@@ -1,0 +1,47 @@
+package main;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+public class CppClassReaderWriter {
+    private File   cppFile;
+    private String cppText;
+    private File   headerFile;
+    private String headerText;
+
+    public void read(File aHeaderFile, File aCppFile) {
+        cppFile = aCppFile;        
+        cppText = readFile(aCppFile.getAbsolutePath());
+        
+        headerFile = aHeaderFile;
+        headerText = readFile(headerFile.getAbsolutePath());
+    }
+
+    public void write(File aHeaderFile, File aCppFile) {
+    }
+
+    public boolean containsMethod(String className, String methodName) {
+        return false;
+    }
+
+    public void addMethod(String className, String methodName, String parameters, String body) {
+
+    }
+
+    public void appendToMethod(String className, String methodName, String parameters, String body) {
+
+    }
+
+    public void addOrAppendToMethod(String className, String methodName, String parameters, String body) {
+
+    }
+
+    private String readFile(String file) throws IOException {
+        byte[] encoded = Files.readAllBytes(Paths.get(file));
+        return new String(encoded);
+    }
+}

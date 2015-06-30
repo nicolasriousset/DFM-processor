@@ -1,0 +1,12 @@
+public class DfmObject {
+    String name;
+    String typeName;
+    
+    public getName() {
+        return name;
+    }
+
+    public getTypeName() {
+        return typename;
+    }
+}

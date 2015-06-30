@@ -1,0 +1,43 @@
+import com.google.common.io.PatternFilenameFilter;
+import com.google.common.io.Files;
+ 
+
+public class Main {
+	public static void main(String[] args) {
+		String inputDirectoryName=args[0];
+		  String outputFileName=args[1];
+		  String logFormat=System.getProperty("log.format");
+		  String logLevel=System.getProperty("log.level");
+		  if (logFormat == null || logFormat.isEmpty()) {
+		    logFormat="[%c{1}] [%p] %m%n";
+		  }
+		  ConsoleAppender consoleAppender=new ConsoleAppender(new PatternLayout(logFormat));
+		  BasicConfigurator.configure(consoleAppender);
+		  Level level=Level.toLevel(logLevel);
+		  Logger.getRootLogger().setLevel(level);
+		  File inputDirectory=new File(inputDirectoryName);
+		  PatternFilenameFilter posFileFilter=new PatternFilenameFilter(".*\\.pos");
+		  File[] inputFiles=inputDirectory.listFiles(posFileFilter);
+		  if (inputFiles == null) {
+		    logger.error("Could not find input *.pos files in " + inputDirectoryName);
+		    throw new IOException();
+		  }
+		  logger.debug("Found " + inputFiles.length + " input files");
+		  File outputFile=new File(outputFileName);
+		  Files.createParentDirs(outputFile);
+		  FileOutputStream output=Files.newOutputStreamSupplier(outputFile).getOutput();
+		  logger.info("Appending to " + outputFileName);
+		  for (  File input : inputFiles) {
+		    Files.copy(input,output);
+		    logger.debug("Appended " + input.getName());
+		  } 		
+	}
+
+	/* (non-Java-doc)
+	 * @see java.lang.Object#Object()
+	 */
+	public Main() {
+		super();
+	}
+
+}

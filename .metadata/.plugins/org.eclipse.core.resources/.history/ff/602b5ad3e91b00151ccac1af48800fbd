@@ -1,0 +1,20 @@
+public class DfmObject {
+    String name;
+    String typeName;
+    
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String  aName) {
+        name = aName;
+    }
+
+    public String getTypeName() {
+        return typename;
+    }
+    public void setTypeName(String aTypeName) {
+        typename = aTypeName;
+    }
+    
+}

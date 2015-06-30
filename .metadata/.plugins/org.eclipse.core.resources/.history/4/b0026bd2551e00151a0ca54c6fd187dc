@@ -1,0 +1,70 @@
+package main;
+import java.io.File;
+import conversion.*;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.logging.Logger;
+
+import com.google.common.io.Files;
+import com.google.common.io.PatternFilenameFilter;
+
+public class RhUiModernizer {
+    static Logger log = Logger.getLogger(RhUiModernizer.class.getName());
+
+    public RhUiModernizer() {
+    }
+
+    public void run(String folder, String dfmFiles) {
+        try {
+            Path outputFileName = Paths.get(folder, "processedDfms.txt");
+            File inputDirectory = new File(folder);
+            PatternFilenameFilter dfmFileFilter = new PatternFilenameFilter(".*\\.dfm");
+            File[] inputFiles = inputDirectory.listFiles(dfmFileFilter);
+            if (inputFiles == null) {
+                throw new IOException("Could not find input *.pos files in " + folder);
+            }
+            log.info("Found " + inputFiles.length + " input files");
+            File outputFile = new File(outputFileName.toString());
+            Files.createParentDirs(outputFile);
+            for (File dfmFile : inputFiles) {
+                ProcessDfm(dfmFile);
+            }
+        } catch (IOException e) {
+            log.severe(e.getMessage());
+        }
+    }
+
+    private void updateDfmObject(DfmObject dfmObject) {
+        ArrayList<AConversionRule> conversionRules = new ArrayList<AConversionRule>();
+        conversionRules.add(new BoutonFermerStyleRule());
+        conversionRules.add(new FormStyleRule());
+
+        for (AConversionRule rule : conversionRules) {
+            rule.apply(dfmObject);
+        }
+
+        // Recursively apply to children
+        for (DfmObject childObject : dfmObject) {
+            updateDfmObject(childObject);
+        }
+    }
+
+    private void ProcessDfm(File dfmFile) {
+        try {
+            log.info("Processing " + dfmFile.getAbsolutePath());
+            DfmReaderWriter dfmReaderWriter = new DfmReaderWriter();
+            DfmObject dfmRoot = dfmReaderWriter.read(dfmFile);
+            updateDfmObject(dfmRoot);
+            dfmReaderWriter.write(dfmFile, dfmRoot);
+        } catch (IOException e) {
+            log.severe(e.getMessage());
+        } catch (InterruptedException e) {
+            log.severe(e.getMessage());
+        } catch (DfmReaderWriterException e) {
+            log.severe(e.getMessage());
+        }
+    }
+}
