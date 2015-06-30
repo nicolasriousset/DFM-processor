@@ -1,10 +1,10 @@
-package conversion.rules;
+package conversion;
 
 import java.util.logging.Logger;
 
-import conversion.CppClass;
+import cpp.CppClass;
+import dfm.DfmObject;
 
-import main.DfmObject;
 
 public abstract class AConversionRule {
     static Logger log = Logger.getLogger(AConversionRule.class.getName());

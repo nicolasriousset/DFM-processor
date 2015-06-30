@@ -1,12 +1,12 @@
-package conversion.rules;
+package conversion;
 
-import main.DfmObject;
-import conversion.CppClass;
-import conversion.CppClassReaderWriterException;
+import cpp.CppClass;
+import cpp.CppClassReaderWriterException;
+import dfm.DfmObject;
 
-public class ChangeBaseClassRule extends AConversionRule {
+public class ChangeBaseClass extends AConversionRule {
     private String newBaseClass;
-    public ChangeBaseClassRule(String aNewBaseClass) {
+    public ChangeBaseClass(String aNewBaseClass) {
         newBaseClass = aNewBaseClass;
     }
     

@@ -1,4 +1,4 @@
-package conversion;
+package cpp;
 
 import java.io.File;
 
@@ -20,6 +20,8 @@ public class Utils {
     }
     
     public static String replaceSubString(String str, int from, int to, String replacement) {
-        return str.substring(0, from) + replacement + str.substring(to);
+        String prefix = str.substring(0, from);
+        String suffix = str.substring(to);
+        return prefix + replacement + suffix;
     }
 }

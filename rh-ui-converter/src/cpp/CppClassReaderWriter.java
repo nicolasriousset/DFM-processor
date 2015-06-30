@@ -1,4 +1,4 @@
-package conversion;
+package cpp;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,13 +14,13 @@ public class CppClassReaderWriter {
     }
 
     public void write(CppClass cppClass, File aCppHeader, File aCppBody) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppHeader.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppHeader.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             writer.write(cppClass.getCppHeader());
         } catch (IOException e) {
             e.printStackTrace();
         }        
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppBody.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppBody.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             writer.write(cppClass.getCppBody());
         } catch (IOException e) {
             e.printStackTrace();

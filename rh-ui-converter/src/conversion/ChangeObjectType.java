@@ -1,14 +1,14 @@
-package conversion.rules;
+package conversion;
 
-import main.DfmObject;
-import conversion.CppClass;
-import conversion.CppClassReaderWriterException;
+import cpp.CppClass;
+import cpp.CppClassReaderWriterException;
+import dfm.DfmObject;
 
-public class ChangeObjectTypeRule extends AConversionRule {
+public class ChangeObjectType extends AConversionRule {
     String oldObjectType;
     String newObjectType;
     
-    public ChangeObjectTypeRule(String currentObjectType, String newObjectType) {
+    public ChangeObjectType(String currentObjectType, String newObjectType) {
         this.oldObjectType = currentObjectType;
         this.newObjectType = newObjectType;
     }

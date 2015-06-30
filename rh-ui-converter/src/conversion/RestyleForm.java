@@ -1,10 +1,10 @@
-package conversion.rules;
+package conversion;
 
-import conversion.CppClass;
-import conversion.Utils;
-import main.DfmObject;
+import cpp.CppClass;
+import cpp.Utils;
+import dfm.DfmObject;
 
-public class RestyleFormRule extends AConversionRule {
+public class RestyleForm extends AConversionRule {
 
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {

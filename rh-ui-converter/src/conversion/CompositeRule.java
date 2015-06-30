@@ -1,9 +1,9 @@
-package conversion.rules;
+package conversion;
 
 import java.util.ArrayList;
 
-import main.DfmObject;
-import conversion.CppClass;
+import cpp.CppClass;
+import dfm.DfmObject;
 
 public class CompositeRule extends AConversionRule {
     ArrayList<AConversionRule> rules;

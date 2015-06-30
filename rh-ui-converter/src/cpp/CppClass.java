@@ -1,4 +1,4 @@
-package conversion;
+package cpp;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -230,4 +230,24 @@ public class CppClass {
         
         cppHeader = Utils.replaceSubString(cppHeader, m.start(1), m.end(1), newTypeName);
     }
+    
+    private Matcher getLineOfCodeMatcher(String cppCode, String keywords) {
+        String regex = String.format("(?m)^.*%s.*$", Pattern.quote(keywords)); 
+        Pattern p = Pattern.compile(regex);
+        return p.matcher(cppCode);        
+    }
+    
+    public boolean containsLineOfCode(String keywords) {
+        Matcher m = getLineOfCodeMatcher(cppBody, keywords);
+        return m.find();
+    }
+
+    public void removeLineOfCode(String keywords) {
+        Matcher m = getLineOfCodeMatcher(cppBody, keywords);
+        while (m.find()) {
+            cppBody = Utils.replaceSubString(cppBody, m.start(), m.end(), "");
+            m = getLineOfCodeMatcher(cppBody, keywords);
+        }
+    }
+    
 }

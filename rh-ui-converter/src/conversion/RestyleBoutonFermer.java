@@ -1,12 +1,12 @@
-package conversion.rules;
+package conversion;
 
-import conversion.CppClass;
-import conversion.CppClass.CppFile;
-import conversion.CppClassReaderWriterException;
-import conversion.Utils;
-import main.DfmObject;
+import cpp.CppClass;
+import cpp.CppClassReaderWriterException;
+import cpp.Utils;
+import cpp.CppClass.CppFile;
+import dfm.DfmObject;
 
-public class RestyleBoutonFermerRule extends AConversionRule {
+public class RestyleBoutonFermer extends AConversionRule {
 
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {

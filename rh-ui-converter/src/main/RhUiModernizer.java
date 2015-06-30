@@ -1,9 +1,9 @@
 package main;
 
 import java.io.File;
+
 import conversion.*;
-import conversion.CppClass.CppFile;
-import conversion.rules.*;
+import conversion.condition.PropertyValueIsNullOrEquals;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -13,6 +13,12 @@ import java.util.logging.Logger;
 
 import com.google.common.io.Files;
 import com.google.common.io.PatternFilenameFilter;
+
+import cpp.*;
+import cpp.CppClass.CppFile;
+import dfm.DfmObject;
+import dfm.DfmReaderWriter;
+import dfm.DfmReaderWriterException;
 
 public class RhUiModernizer {
     static Logger log = Logger.getLogger(RhUiModernizer.class.getName());
@@ -40,13 +46,19 @@ public class RhUiModernizer {
         }
     }
 
-    private void updateDfm(DfmObject dfmObject, CppClass cppClass) {
+    private void updateDfmObjects(DfmObject dfmObject, CppClass cppClass) {
+        final String EDIT_BOX_HEIGHT = "24";
+        
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
-        rules.add(new RestyleBoutonFermerRule());
-        rules.add(new RestyleFormRule());
-        rules.add(new CompositeRule().addRule(new ChangeBaseClassRule("TFormExtented")).addRule(new AddIncludeRule(CppFile.HEADER, "def_tform.h")));
-        rules.add(new CompositeRule().addRule(new ChangeObjectTypeRule("TEdit", "TColoredEdit")).addRule(new AddIncludeRule(CppFile.HEADER, "ColoredEdit.h")));
-        rules.add(new ChangePropertyValueRule("TColoredEdit", "Height", "24"));
+        rules.add(new RestyleBoutonFermer());
+        rules.add(new RestyleForm());        
+        rules.add(new CompositeRule().addRule(new ChangeObjectType("TEdit", "TColoredEdit")).addRule(new AddInclude(CppFile.HEADER, "ColoredEdit.h")));
+        rules.add(new CompositeRule().addRule(new ChangeObjectType("TMaskEdit", "TColoredMaskEdit")).addRule(new AddInclude(CppFile.HEADER, "ColoredMaskEdit.h")));
+        rules.add(new CompositeRule().addRule(new ChangeObjectType("TComboBox", "TComboBoxEx")).addRule(new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
+        rules.add(new CompositeRule().addRule(new ChangeObjectType("TComboBox98", "TComboBoxEx")).addRule(new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
+        rules.add(new ChangePropertyValue("TColoredEdit", "Height", EDIT_BOX_HEIGHT));
+        rules.add(new ChangePropertyValue("TColoredMaskEdit", "Height", EDIT_BOX_HEIGHT));
+        rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -54,10 +66,25 @@ public class RhUiModernizer {
 
         // Recursively apply to children
         for (DfmObject childObject : dfmObject) {
-            updateDfm(childObject, cppClass);
+            updateDfmObjects(childObject, cppClass);
         }
     }
 
+    void updateCppCode(DfmObject dfmObject, CppClass cppClass) {
+        
+        ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
+        rules.add(new CompositeRule().addRule(new ChangeBaseClass("TFormExtented")).addRule(new AddInclude(CppFile.HEADER, "def_tform.h")));
+        rules.add(new RemoveLineOfCode("On empeche la fenetre de se déplacer"));
+        rules.add(new RemoveLineOfCode("GetSystemMenu(Handle"));
+        rules.add(new RemoveLineOfCode("RemoveMenu"));
+        rules.add(new RemoveLineOfCode("center_win"));
+        rules.add(new RemoveLineOfCode("wPrinc->Width/2"));        
+
+        for (AConversionRule rule : rules) {
+            rule.apply(dfmObject, cppClass);
+        }
+    }
+    
     private void ProcessDfm(File dfmFile) {
         try {
             log.info("Processing " + dfmFile.getAbsolutePath());
@@ -68,7 +95,8 @@ public class RhUiModernizer {
             File cppFile = Utils.replaceExtension(dfmFile, "cpp");
             CppClass cppClass = cppReaderWriter.read(headerFile, cppFile);            
             
-            updateDfm(dfmRoot, cppClass);
+            updateDfmObjects(dfmRoot, cppClass);            
+            updateCppCode(dfmRoot, cppClass);
             
             dfmReaderWriter.write(dfmFile, dfmRoot);
             cppReaderWriter.write(cppClass, headerFile, cppFile);

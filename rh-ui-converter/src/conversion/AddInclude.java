@@ -1,14 +1,14 @@
-package conversion.rules;
+package conversion;
 
-import main.DfmObject;
-import conversion.CppClass;
-import conversion.CppClass.CppFile;
+import cpp.CppClass;
+import cpp.CppClass.CppFile;
+import dfm.DfmObject;
 
-public class AddIncludeRule extends AConversionRule {
+public class AddInclude extends AConversionRule {
     String newHeader;
     CppFile dest;
     
-    public AddIncludeRule(CppFile aDest, String aNewHeader) {
+    public AddInclude(CppFile aDest, String aNewHeader) {
         newHeader = aNewHeader;
         dest = aDest;
     }
