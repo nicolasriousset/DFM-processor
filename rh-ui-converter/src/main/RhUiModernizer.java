@@ -83,6 +83,7 @@ public class RhUiModernizer {
         rules.add(new ChangePropertyValue("TColoredMaskEdit", "Height", EDIT_BOX_HEIGHT));
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
         rules.add(new RestyleSpreadPanel());
+        rules.add(new RestyleBevel());
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);

@@ -131,8 +131,8 @@ public class RestyleSpreadPanel extends AConversionRule {
                 cppClass.removeLineOfCode(CppFile.HEADER, button.getName());
             }
         }
-        try {
-            cppClass.appendToApplyStyleMethod(String.format("    %s->Images = ImageManager::GetInstance().GetImageList(ImageManager::IMG_LIST_SPREAD_TOOLBAR);", toolbar.getName()));
+        try {            
+            cppClass.appendToApplyStyleMethod(String.format("    Apparence::ApplySpreadTitleBarStyle(%s, %s, useLegacyUI);", titlePanel.getName(), toolbar.getName()));
         } catch (CppClassReaderWriterException e) {
             e.printStackTrace();
             result = false;
@@ -150,7 +150,7 @@ public class RestyleSpreadPanel extends AConversionRule {
         ArrayList<String> anchorsList = new ArrayList<String>();
         if (!mainPanel.hasNeighbour(Direction.UP, "TPanel"))
             anchorsList.add("akTop");
-        if (!mainPanel.hasNeighbour(Direction.DOWN, "TPanel"))
+        if (!mainPanel.hasNeighbour(Direction.DOWN, "TPanel") || !mainPanel.hasNeighbour(Direction.UP, "TPanel"))
             anchorsList.add("akBottom");
         if (!mainPanel.hasNeighbour(Direction.LEFT, "TPanel"))
             anchorsList.add("akLeft");
