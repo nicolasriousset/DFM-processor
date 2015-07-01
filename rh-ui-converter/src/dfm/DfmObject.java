@@ -55,7 +55,7 @@ public class DfmObject implements Iterable<DfmObject> {
         return children.iterator();
     }
 
-    public HashMap<String, String> getProperties() {
+    public HashMap<String, String> properties() {
         return properties;
     }
 
@@ -135,5 +135,51 @@ public class DfmObject implements Iterable<DfmObject> {
             }
         }
         return false;
+    }
+    
+    public boolean isCloseToRight() {
+        return !isCloseToLeft();
+    }
+    
+    public boolean isCloseToLeft() {
+        if (getParent() == null)
+            return false;
+        
+        int myHCenter = Integer.parseInt(properties.get("Left")) + Integer.parseInt(properties.get("Width")) / 2;
+        String parentWidth = getParent().properties().get("ClientWidth");
+        if (parentWidth == null)
+            parentWidth = getParent().properties().get("Width");
+        if (parentWidth == null)
+            return false;
+        int parentHCenter = Integer.parseInt(parentWidth) / 2;
+        
+        return myHCenter < parentHCenter; 
+    }
+
+    public boolean isCloseToTop() {
+        return !isCloseToBottom();
+    }
+    
+    public boolean isCloseToBottom() {
+        if (getParent() == null)
+            return false;
+        
+        int myVCenter = Integer.parseInt(properties.get("Top")) + Integer.parseInt(properties.get("Height")) / 2;
+        String parentHeight = getParent().properties().get("ClientHeight");
+        if (parentHeight == null)
+            parentHeight = getParent().properties().get("Height");
+        if (parentHeight == null)
+            return false;
+        int parentVCenter = Integer.parseInt(parentHeight) / 2;
+        
+        return myVCenter > parentVCenter;         
+    }
+
+    public boolean propertieEqualsTo(String propName, String propValue) {
+        String val = properties.get(propName);
+        if (val == null)
+            return false;
+        
+        return val.compareTo(propValue) == 0;
     }
 }

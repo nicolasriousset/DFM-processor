@@ -14,9 +14,9 @@ public class PropertyValueIsNullOrEquals implements IConversionCondition{
     
     @Override
     public boolean isVerified(DfmObject dfmObject, CppClass cppClass) {
-        if (dfmObject.getProperties().get(propertyName) == null)
+        if (dfmObject.properties().get(propertyName) == null)
             return true;
-        return dfmObject.getProperties().get(propertyName).compareTo(propertyValue) == 0;
+        return dfmObject.properties().get(propertyName).compareTo(propertyValue) == 0;
     }
 
 }

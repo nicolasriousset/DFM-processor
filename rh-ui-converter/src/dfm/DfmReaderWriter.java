@@ -103,17 +103,17 @@ public class DfmReaderWriter {
                 state = ParsingState.READING_MULTILINE_STRING;
             }
 
-            currentObject.getProperties().put(currentTag, value);
+            currentObject.properties().put(currentTag, value);
         } else if (tokens.size() == 1) {
-            currentObject.getProperties().put(currentTag, "");
+            currentObject.properties().put(currentTag, "");
         } else {
             throw new DfmReaderWriterException("Incapable de traiter la ligne : " + line);
         }
     }
 
     void parseMultilineProperty(String line, String endOfPropertyDelim) {
-        line = currentObject.getProperties().get(currentTag) + "\r\n" + line.trim();
-        currentObject.getProperties().put(currentTag, line);
+        line = currentObject.properties().get(currentTag) + "\r\n" + line.trim();
+        currentObject.properties().put(currentTag, line);
         if (line.endsWith(endOfPropertyDelim))
             state = ParsingState.READING_OBJECT;
     }
@@ -166,8 +166,8 @@ public class DfmReaderWriter {
         writer.write(line);
         
         // Writing properties
-        for (String propertyName : rootObject.getProperties().keySet()) {
-            line = String.format("%s  %s = %s%n", indent, propertyName, rootObject.getProperties().get(propertyName));
+        for (String propertyName : rootObject.properties().keySet()) {
+            line = String.format("%s  %s = %s%n", indent, propertyName, rootObject.properties().get(propertyName));
             writer.write(line);
         }
 

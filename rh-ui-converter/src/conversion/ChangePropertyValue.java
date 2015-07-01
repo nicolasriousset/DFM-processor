@@ -34,7 +34,7 @@ public class ChangePropertyValue extends AConversionRule {
 
     @Override
     protected boolean doApply(DfmObject dfmObject, CppClass cppClass) {
-        dfmObject.getProperties().put(propName, propValue);
+        dfmObject.properties().put(propName, propValue);
         return true;
     }
 

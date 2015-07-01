@@ -23,7 +23,7 @@ public class RestyleBevel extends AConversionRule {
         if (!bevel.hasNeighbour(Direction.DOWN, "TPanel"))
             anchorsList.add("akBottom");
         String anchors = "[" + Joiner.on(",").join(anchorsList) + "]";
-        bevel.getProperties().put("Anchors", anchors);
+        bevel.properties().put("Anchors", anchors);
 
         return true;
     }

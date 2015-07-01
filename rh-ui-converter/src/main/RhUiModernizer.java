@@ -73,7 +73,9 @@ public class RhUiModernizer {
         final String EDIT_BOX_HEIGHT = "24";
         
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
-        rules.add(new RestyleBoutonFermer());
+        rules.add(new RestyleSpeedButton("Fermer", "IMG_FERMER", RhConst.BOUTON_FERMER_GLYPH));
+        rules.add(new RestyleSpeedButton("Valider", "IMG_OK", RhConst.BOUTON_VALIDER_GLYPH));
+        rules.add(new RestyleSpeedButton("Annuler", "IMG_ANNULER", RhConst.BOUTON_ANNULER_GLYPH));        
         rules.add(new RestyleForm());        
         rules.add(new CompositeRule().addRule(new ChangeObjectType("TEdit", "TColoredEdit")).addRule(new AddInclude(CppFile.HEADER, "ColoredEdit.h")));
         rules.add(new CompositeRule().addRule(new ChangeObjectType("TMaskEdit", "TColoredMaskEdit")).addRule(new AddInclude(CppFile.HEADER, "ColoredMaskEdit.h")));
@@ -84,6 +86,7 @@ public class RhUiModernizer {
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
         rules.add(new RestyleSpreadPanel());
         rules.add(new RestyleBevel());
+        rules.add(new UseParentFont());
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -102,7 +105,7 @@ public class RhUiModernizer {
         rules.add(new RemoveLineOfCode(CppFile.BODY, "On empeche la fenetre de se déplacer"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, "GetSystemMenu(Handle"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, "RemoveMenu"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "center_win"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "Center_Win"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Width/2"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Height/2"));        
 

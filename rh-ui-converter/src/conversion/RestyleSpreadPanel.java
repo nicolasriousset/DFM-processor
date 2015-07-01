@@ -8,6 +8,7 @@ import cpp.CppClass;
 import cpp.CppClass.CppFile;
 import cpp.CppClass.Visibility;
 import cpp.CppClassReaderWriterException;
+import cpp.Utils;
 import dfm.DfmObject;
 import dfm.DfmObject.Direction;
 
@@ -112,20 +113,20 @@ public class RestyleSpreadPanel extends AConversionRule {
         
         // Updating title panel properties
         DfmObject titlePanel = findTitlePanel(mainPanel);
-        titlePanel.getProperties().put("Height", "27");
-        titlePanel.getProperties().put("Caption", "''");
-        titlePanel.getProperties().put("ParentColor", "True");
+        titlePanel.properties().put("Height", "27");
+        titlePanel.properties().put("Caption", "''");
+        titlePanel.properties().put("ParentColor", "True");
 
         // Updating toolbar properties
         DfmObject toolbar = findSpreadToolBar(mainPanel);
-        toolbar.getProperties().put("Images", "wPrinc.SpreadToolBarImages");
-        toolbar.getProperties().put("Width", "180");
-        toolbar.getProperties().put("ParentColor", "True");
-        toolbar.getProperties().put("Transparent", "True");
+        toolbar.properties().put("Images", "wPrinc.SpreadToolBarImages");
+        toolbar.properties().put("Width", "180");
+        toolbar.properties().put("ParentColor", "True");
+        toolbar.properties().put("Transparent", "True");
         // Removing separators
         for (int i = toolbar.getChildrenCount() -1; i >= 0; i--) {
             DfmObject button = toolbar.getChild(i);
-            String style = button.getProperties().get("Style");
+            String style = button.properties().get("Style");
             if (button.isInstanceOf("TToolButton") && style != null && style.compareTo("tbsSeparator") == 0) {
                 toolbar.removeChild(i);
                 cppClass.removeLineOfCode(CppFile.HEADER, button.getName());
@@ -142,9 +143,9 @@ public class RestyleSpreadPanel extends AConversionRule {
         
         // Updating title image properties
         DfmObject image = findTitleImage(mainPanel);
-        image.getProperties().put("Align", "alRight");
-        image.getProperties().put("Transparent", "True");
-        image.getProperties().put("Width", "475");
+        image.properties().put("Align", "alRight");
+        image.properties().put("Transparent", "True");
+        image.properties().put("Width", Utils.add(titlePanel.properties().get("Width"), -Integer.parseInt(toolbar.properties().get("Width"))));
         
         // Updating main panel properties
         ArrayList<String> anchorsList = new ArrayList<String>();
@@ -158,16 +159,16 @@ public class RestyleSpreadPanel extends AConversionRule {
             anchorsList.add("akRight");
         String anchors = "[" + Joiner.on(",").join(anchorsList) + "]";
         
-        mainPanel.getProperties().put("Anchors", anchors);
-        mainPanel.getProperties().put("ParentColor", "True");
+        mainPanel.properties().put("Anchors", anchors);
+        mainPanel.properties().put("ParentColor", "True");
 
         // Updating spread panel properties
         DfmObject spreadPanel = findSpreadPanel(mainPanel);
-        spreadPanel.getProperties().put("ParentColor", "True");
+        spreadPanel.properties().put("ParentColor", "True");
         
         // Adding on resize event to resize spread columns
         DfmObject mainForm = mainPanel.getRoot();
-        String onResizeMethodName = mainForm.getProperties().get("OnResize");
+        String onResizeMethodName = mainForm.properties().get("OnResize");
         if (onResizeMethodName == null || onResizeMethodName.trim().isEmpty())
             onResizeMethodName = "FormResize";
         DfmObject spread = findSpread(mainPanel);        
@@ -177,7 +178,7 @@ public class RestyleSpreadPanel extends AConversionRule {
         String onResizeMethodCode = String.format(rawCode, spread.getName());
         try {
             cppClass.createMethodOrAppendTo(Visibility.PUBLISHED, "__fastcall", onResizeMethodName, "TObject *Sender", onResizeMethodCode, "");
-            mainForm.getProperties().put("OnResize", onResizeMethodName);
+            mainForm.properties().put("OnResize", onResizeMethodName);
         } catch (CppClassReaderWriterException e) {
             e.printStackTrace();
             result = false;
