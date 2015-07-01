@@ -130,6 +130,7 @@ public class RestyleSpreadPanel extends AConversionRule {
             if (button.isInstanceOf("TToolButton") && style != null && style.compareTo("tbsSeparator") == 0) {
                 toolbar.removeChild(i);
                 cppClass.removeLineOfCode(CppFile.HEADER, button.getName());
+                cppClass.removeLineOfCode(CppFile.BODY, button.getName());
             }
         }
         try {            

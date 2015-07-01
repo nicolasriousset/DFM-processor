@@ -8,8 +8,11 @@ import dfm.DfmObject;
 public class CompositeRule extends AConversionRule {
     ArrayList<AConversionRule> rules;
     
-    public CompositeRule() {
+    public CompositeRule(AConversionRule... rulesList) {
         rules = new ArrayList<AConversionRule>();
+        for (AConversionRule rule : rulesList) {
+            addRule(rule);
+        }
     }
     
     public CompositeRule addRule(AConversionRule aRule) {

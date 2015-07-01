@@ -138,7 +138,18 @@ public class DfmObject implements Iterable<DfmObject> {
     }
     
     public boolean isCloseToRight() {
-        return !isCloseToLeft();
+        if (getParent() == null)
+            return false;
+        
+        int myHCenter = Integer.parseInt(properties.get("Left")) + Integer.parseInt(properties.get("Width")) / 2;
+        String parentWidth = getParent().properties().get("ClientWidth");
+        if (parentWidth == null)
+            parentWidth = getParent().properties().get("Width");
+        if (parentWidth == null)
+            return false;
+        int parentRightLimit = (int)(0.75 * (double)Integer.parseInt(parentWidth));
+        
+        return myHCenter > parentRightLimit; 
     }
     
     public boolean isCloseToLeft() {
@@ -151,13 +162,24 @@ public class DfmObject implements Iterable<DfmObject> {
             parentWidth = getParent().properties().get("Width");
         if (parentWidth == null)
             return false;
-        int parentHCenter = Integer.parseInt(parentWidth) / 2;
+        int parentLeftLimit = (int)(0.25 * (double)Integer.parseInt(parentWidth));
         
-        return myHCenter < parentHCenter; 
+        return myHCenter < parentLeftLimit; 
     }
 
     public boolean isCloseToTop() {
-        return !isCloseToBottom();
+        if (getParent() == null)
+            return false;
+        
+        int myVCenter = Integer.parseInt(properties.get("Top")) + Integer.parseInt(properties.get("Height")) / 2;
+        String parentHeight = getParent().properties().get("ClientHeight");
+        if (parentHeight == null)
+            parentHeight = getParent().properties().get("Height");
+        if (parentHeight == null)
+            return false;
+        int parentTopLimit = (int) (0.25 * (double)Integer.parseInt(parentHeight));
+        
+        return myVCenter < parentTopLimit;         
     }
     
     public boolean isCloseToBottom() {
@@ -170,9 +192,9 @@ public class DfmObject implements Iterable<DfmObject> {
             parentHeight = getParent().properties().get("Height");
         if (parentHeight == null)
             return false;
-        int parentVCenter = Integer.parseInt(parentHeight) / 2;
+        int parentBottomLimit = (int) (0.75 * (double)Integer.parseInt(parentHeight));
         
-        return myVCenter > parentVCenter;         
+        return myVCenter > parentBottomLimit;         
     }
 
     public boolean propertieEqualsTo(String propName, String propValue) {

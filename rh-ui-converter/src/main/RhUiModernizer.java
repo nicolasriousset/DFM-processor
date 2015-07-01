@@ -75,18 +75,22 @@ public class RhUiModernizer {
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
         rules.add(new RestyleSpeedButton("Fermer", "IMG_FERMER", RhConst.BOUTON_FERMER_GLYPH));
         rules.add(new RestyleSpeedButton("Valider", "IMG_OK", RhConst.BOUTON_VALIDER_GLYPH));
-        rules.add(new RestyleSpeedButton("Annuler", "IMG_ANNULER", RhConst.BOUTON_ANNULER_GLYPH));        
+        rules.add(new RestyleSpeedButton("Annuler", "IMG_ANNULER", RhConst.BOUTON_ANNULER_GLYPH));
+        rules.add(new RestyleSpeedButton());
         rules.add(new RestyleForm());        
-        rules.add(new CompositeRule().addRule(new ChangeObjectType("TEdit", "TColoredEdit")).addRule(new AddInclude(CppFile.HEADER, "ColoredEdit.h")));
-        rules.add(new CompositeRule().addRule(new ChangeObjectType("TMaskEdit", "TColoredMaskEdit")).addRule(new AddInclude(CppFile.HEADER, "ColoredMaskEdit.h")));
-        rules.add(new CompositeRule().addRule(new ChangeObjectType("TComboBox", "TComboBoxEx")).addRule(new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
-        rules.add(new CompositeRule().addRule(new ChangeObjectType("TComboBox98", "TComboBoxEx")).addRule(new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
+        rules.add(new CompositeRule(new ChangeObjectType("TEdit", "TColoredEdit"), new AddInclude(CppFile.HEADER, "ColoredEdit.h")));
+        rules.add(new CompositeRule(new ChangeObjectType("TMaskEdit", "TColoredMaskEdit"), new AddInclude(CppFile.HEADER, "ColoredMaskEdit.h")));
+        rules.add(new CompositeRule(new ChangeObjectType("TComboBox", "TComboBoxEx"), new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
+        rules.add(new CompositeRule(new ChangeObjectType("TComboBox98", "TComboBoxEx"), new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
         rules.add(new ChangePropertyValue("TColoredEdit", "Height", EDIT_BOX_HEIGHT));
         rules.add(new ChangePropertyValue("TColoredMaskEdit", "Height", EDIT_BOX_HEIGHT));
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
         rules.add(new RestyleSpreadPanel());
         rules.add(new RestyleBevel());
         rules.add(new UseParentFont());
+        rules.add(new ChangeFont("TComboBoxEx"));
+        rules.add(new ChangeFont("TColoredEdit"));
+        rules.add(new ChangeFont("TColoredMaskEdit"));
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -106,6 +110,7 @@ public class RhUiModernizer {
         rules.add(new RemoveLineOfCode(CppFile.BODY, "GetSystemMenu(Handle"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, "RemoveMenu"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, "Center_Win"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "center_win"));        
         rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Width/2"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Height/2"));        
 
