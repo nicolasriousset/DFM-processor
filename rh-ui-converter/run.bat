@@ -1,0 +1,1 @@
+c:\Borland\jdk1.7.0_51\bin\java.exe -jar target\rh-ui-converter-0.0.1-SNAPSHOT-jar-with-dependencies.jar %1

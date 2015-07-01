@@ -1,0 +1,1 @@
+c:\maven\bin\mvn clean compile assembly:single

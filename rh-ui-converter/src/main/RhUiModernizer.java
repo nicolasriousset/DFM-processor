@@ -7,21 +7,10 @@ import java.util.logging.Logger;
 
 import com.google.common.io.PatternFilenameFilter;
 
-import conversion.AConversionRule;
-import conversion.AddInclude;
-import conversion.ChangeBaseClass;
-import conversion.ChangeObjectType;
-import conversion.ChangePropertyValue;
-import conversion.CompositeRule;
-import conversion.RemoveLineOfCode;
-import conversion.RestyleBoutonFermer;
-import conversion.RestyleForm;
-import conversion.condition.PropertyValueIsNullOrEquals;
-import cpp.CppClass;
+import conversion.*;
+import conversion.condition.*;
+import cpp.*;
 import cpp.CppClass.CppFile;
-import cpp.CppClassReaderWriter;
-import cpp.CppClassReaderWriterException;
-import cpp.Utils;
 import dfm.DfmObject;
 import dfm.DfmReaderWriter;
 import dfm.DfmReaderWriterException;
@@ -93,6 +82,7 @@ public class RhUiModernizer {
         rules.add(new ChangePropertyValue("TColoredEdit", "Height", EDIT_BOX_HEIGHT));
         rules.add(new ChangePropertyValue("TColoredMaskEdit", "Height", EDIT_BOX_HEIGHT));
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
+        rules.add(new RestyleSpreadPanel());
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -108,12 +98,12 @@ public class RhUiModernizer {
         
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
         rules.add(new CompositeRule().addRule(new ChangeBaseClass("TFormExtented")).addRule(new AddInclude(CppFile.HEADER, "def_tform.h")));
-        rules.add(new RemoveLineOfCode("On empeche la fenetre de se déplacer"));
-        rules.add(new RemoveLineOfCode("GetSystemMenu(Handle"));
-        rules.add(new RemoveLineOfCode("RemoveMenu"));
-        rules.add(new RemoveLineOfCode("center_win"));
-        rules.add(new RemoveLineOfCode("wPrinc->Width/2"));
-        rules.add(new RemoveLineOfCode("wPrinc->Height/2"));        
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "On empeche la fenetre de se déplacer"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "GetSystemMenu(Handle"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "RemoveMenu"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "center_win"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Width/2"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Height/2"));        
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);

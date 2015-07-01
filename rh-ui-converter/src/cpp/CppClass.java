@@ -87,33 +87,97 @@ public class CppClass {
         return getCppBodyMethodMatcher(methodName).find();
     }
 
-    public void doAddMethodToCppHeader(String methodName, String parameters) throws CppClassReaderWriterException {
-        Pattern p = Pattern.compile("(?m)^ *public:.*$");
+    public enum Visibility {
+        UNKNOWN(""),
+        PRIVATE("private"), 
+        PROTECTED("protected"), 
+        PUBLIC("public"), 
+        PUBLISHED("__published");
+        
+        String value;
+        
+        Visibility(String aValue) {
+            this.value = aValue; 
+        }
+
+        static public Visibility getEnum(String value) {
+            for (Visibility val : values()) {
+                if (val.toString().compareTo(value) == 0)
+                    return val;
+            }
+            return UNKNOWN;
+        }
+
+        public String getValue() {
+            return value;
+        }
+        
+        @Override
+        public String toString() {
+            return this.getValue();
+        }        
+    };
+
+    private int findEndOfVisibilitySection(String cppHeader, int from) {
+        int endOfSection = -1;
+        int nestedLevel = 0;
+        for (int i = from; i < cppHeader.length() && endOfSection == -1; ++i) {
+            switch (cppHeader.charAt(i)) {
+            case '{':
+                nestedLevel++;
+                break;
+            case '}':
+                if (nestedLevel>0)
+                    nestedLevel--;
+                else
+                    endOfSection = i;
+                break;
+            case ':':
+                endOfSection = i;
+                while (endOfSection > 0 && cppHeader.charAt(endOfSection) != '\n') {
+                    endOfSection--;
+                }
+                String section = cppHeader.substring(endOfSection, i).trim();
+                if (Visibility.getEnum(section) == Visibility.UNKNOWN)
+                    endOfSection = -1;
+            break;
+            }
+        }
+        
+        return endOfSection;
+    }
+    
+    public void doAddMethodToCppHeader(Visibility visibility, String callConvention, String methodName, String parameters) throws CppClassReaderWriterException {
+        Pattern p = Pattern.compile(String.format("(?m)^ *%s:.*$", visibility.toString()));
         Matcher m = p.matcher(cppHeader);
         if (m.find()) {
-            int insertPos = m.end();
-            StringUtils.strip(parameters, "()");
-            String methodSignature = String.format("\r\n    void %s(%s);", methodName, parameters);
-            cppHeader = cppHeader.substring(0, insertPos) + methodSignature + cppHeader.substring(insertPos);
+            int insertPos = findEndOfVisibilitySection(cppHeader, m.end());
+            parameters = StringUtils.strip(parameters, "()");
+            if (!callConvention.isEmpty())
+                callConvention += " ";
+            String methodSignature = String.format("    void %s%s(%s);", callConvention, methodName, parameters);
+            cppHeader = cppHeader.substring(0, insertPos) + methodSignature + cppHeader.substring(insertPos-1);
         } else {
             throw new CppClassReaderWriterException(String.format("Unable to locate a palce to insert method %s in class %s" + methodName, className));
         }
     }
 
-    public void doAddMethodToCppBody(String methodName, String parameters, String body) throws CppClassReaderWriterException {
-        String methodBody = String.format("\r\nvoid %s::%s(%s) {\r\n%s\r\n}", className, methodName, parameters, body);
+    public void doAddMethodToCppBody(String callConvention, String methodName, String parameters, String body) throws CppClassReaderWriterException {
+        if (!callConvention.isEmpty())
+            callConvention += " ";
+        String methodBody = String.format("\r\nvoid %s%s::%s(%s) {\r\n%s\r\n}\r\n", callConvention, className, methodName, parameters, body);
         cppBody += methodBody;
     }
 
-    public void doAddMethod(String methodName, String parameters, String body) throws CppClassReaderWriterException {
-        doAddMethodToCppHeader(methodName, parameters);
-        doAddMethodToCppBody(methodName, parameters, body);
+    public void doAddMethod(Visibility visibility, String callConvention, String methodName, String parameters, String body) throws CppClassReaderWriterException {
+        doAddMethodToCppHeader(visibility, callConvention, methodName, parameters);
+        doAddMethodToCppBody(callConvention, methodName, parameters, body);
     }
 
-    public void addMethod(String methodName, String parameters, String body) throws CppClassReaderWriterException {
+    public void addMethod(Visibility visibility, String callConvention, String methodName, String parameters, String body) throws CppClassReaderWriterException {
         if (containsMethod(methodName))
             throw new CppClassReaderWriterException(String.format("La méthode %s::%s existe déjà", className, methodName));
-        doAddMethod(methodName, parameters, body);
+        doAddMethod(visibility, callConvention, methodName, parameters, body);
     }
 
     public void doAppendToMethodBody(String methodName, String instructions) throws CppClassReaderWriterException {
@@ -124,7 +188,7 @@ public class CppClass {
             String currentBody = cppBody.substring(bodyStart + 1, bodyEnd).trim();
             instructions = instructions.trim();
             if (!currentBody.contains(instructions)) {
-                cppBody = Utils.replaceSubString(cppBody, bodyStart + 1, bodyEnd, "\r\n    " + currentBody + "\r\n    " + instructions.trim() + "\r\n");
+                cppBody = Utils.replaceSubString(cppBody, bodyStart + 1, bodyEnd, "\r\n    " + currentBody + "\r\n\r\n    " + instructions + "\r\n");
             }
         } else {
             throw new CppClassReaderWriterException(String.format("Unable to find the method %s in class %s" + methodName, className));
@@ -156,23 +220,23 @@ public class CppClass {
             }
         }
         return closingBracket;
-    }
-
+    }    
+    
     public void appendToMethod(String methodName, String instructions) throws CppClassReaderWriterException {
         if (!containsMethod(methodName))
             throw new CppClassReaderWriterException(String.format("La méthode %s::%s n'existe pas", className, methodName));
         doAppendToMethodBody(methodName, instructions);
     }
 
-    public void addOrAppendToMethod(String methodName, String parameters, String body, String bodyPrefix) throws CppClassReaderWriterException {
+    public void createMethodOrAppendTo(Visibility visibility, String callConvention, String methodName, String parameters, String body, String bodyPrefix) throws CppClassReaderWriterException {
         if (containsMethod(methodName))
             doAppendToMethodBody(methodName, body);
         else
-            doAddMethod(methodName, parameters, bodyPrefix + "\r\n" + body);
+            doAddMethod(visibility, callConvention, methodName, parameters, bodyPrefix + "\r\n" + body);
     }
 
     public void appendToApplyStyleMethod(String instructions) throws CppClassReaderWriterException {
-        addOrAppendToMethod("ApplyStyle", "bool useLegacyUI", instructions, "    TFormExtented::ApplyStyle(useLegacyUI);");
+        createMethodOrAppendTo(Visibility.PUBLIC, "", "ApplyStyle", "bool useLegacyUI", instructions, "    TFormExtented::ApplyStyle(useLegacyUI);");
     }
 
     public void changeBaseClass(String newBaseClass) throws CppClassReaderWriterException {
@@ -242,12 +306,18 @@ public class CppClass {
         return m.find();
     }
 
-    public void removeLineOfCode(String keywords) {
-        Matcher m = getLineOfCodeMatcher(cppBody, keywords);
+    public void removeLineOfCode(CppFile cppFile, String keywords) {
+        String cppCode = cppFile == CppFile.HEADER ? cppHeader : cppBody;
+        Matcher m = getLineOfCodeMatcher(cppCode, keywords);
         while (m.find()) {
-            cppBody = Utils.replaceSubString(cppBody, m.start(), m.end() + 2, "");
-            m = getLineOfCodeMatcher(cppBody, keywords);
+            cppCode = Utils.replaceSubString(cppCode, m.start(), m.end() + 2, "");
+            m = getLineOfCodeMatcher(cppCode, keywords);
         }
+        
+        if (cppFile == CppFile.HEADER)
+            cppHeader = cppCode;
+        else
+            cppBody = cppCode;
     }
     
 }

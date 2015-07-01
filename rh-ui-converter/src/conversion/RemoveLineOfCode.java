@@ -1,13 +1,16 @@
 package conversion;
 
 import cpp.CppClass;
+import cpp.CppClass.CppFile;
 import dfm.DfmObject;
 
 public class RemoveLineOfCode extends AConversionRule {
     String keywords;
+    CppFile cppFile;
 
-    public RemoveLineOfCode(String keywords) {
+    public RemoveLineOfCode(CppFile cppFile, String keywords) {
         this.keywords = keywords;
+        this.cppFile = cppFile;
     }
 
     @Override
@@ -17,7 +20,7 @@ public class RemoveLineOfCode extends AConversionRule {
 
     @Override
     protected boolean doApply(DfmObject dfmObject, CppClass cppClass) {
-        cppClass.removeLineOfCode(keywords);
+        cppClass.removeLineOfCode(cppFile, keywords);
         return true;
     }
 
