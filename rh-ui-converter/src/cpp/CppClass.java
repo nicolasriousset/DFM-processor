@@ -30,12 +30,11 @@ public class CppClass {
         return m.find();
     }
 
-    public boolean addHeader(CppFile cppFile, String header) {
+    public boolean addIncludeHeader(CppFile cppFile, String header) {
         if (includesHeader(cppFile, header))
             return true;
         
-        // dans la regexp, (?m) active le mode multiligne, pour que ^ et $ matchent les débuts et fins de chaque ligne
-        header = StringUtils.strip(header, "\"<>");
+        // dans la regexp, (?m) active le mode multiligne, pour que ^ et $ matchent les débuts et fins de chaque ligne        
         Pattern p = Pattern.compile("(?m)^\\s*#include\\s+[<\"]\\S+[>\"]$");
         Matcher m = p.matcher(cppFile == CppFile.HEADER ? cppHeader : cppBody);
         int endOfLastHeader = 0;
@@ -43,10 +42,14 @@ public class CppClass {
             endOfLastHeader = m.end();
         }
 
+        header = header.trim();
+        if (!header.startsWith("<") && !header.startsWith("\""))
+            header = String.format("\"%s\"", header);
+        
         if (cppFile == CppFile.HEADER)
-            cppHeader = Utils.replaceSubString(cppHeader, endOfLastHeader, endOfLastHeader, String.format("\r\n#include \"%s\"", header));
+            cppHeader = Utils.replaceSubString(cppHeader, endOfLastHeader, endOfLastHeader, String.format("\r\n#include %s", header));
         else
-            cppBody = Utils.replaceSubString(cppBody, endOfLastHeader, endOfLastHeader, String.format("\r\n#include \"%s\"", header));
+            cppBody = Utils.replaceSubString(cppBody, endOfLastHeader, endOfLastHeader, String.format("\r\n#include %s", header));
 
         return true;
     }
@@ -295,23 +298,23 @@ public class CppClass {
         cppHeader = Utils.replaceSubString(cppHeader, m.start(1), m.end(1), newTypeName);
     }
     
-    private Matcher getLineOfCodeMatcher(String cppCode, String keywords) {
-        String regex = String.format("(?m)^.*%s.*$", Pattern.quote(keywords)); 
-        Pattern p = Pattern.compile(regex);
+    private Matcher getLineOfCodeMatcher(String cppCode, String regex) {
+        String lineRegex = String.format("(?m)^%s$", regex); 
+        Pattern p = Pattern.compile(lineRegex);
         return p.matcher(cppCode);        
     }
     
-    public boolean containsLineOfCode(String keywords) {
-        Matcher m = getLineOfCodeMatcher(cppBody, keywords);
+    public boolean containsLineOfCode(String regex) {
+        Matcher m = getLineOfCodeMatcher(cppBody, regex);
         return m.find();
     }
 
-    public void removeLineOfCode(CppFile cppFile, String keywords) {
+    public void removeLineOfCode(CppFile cppFile, String regex) {
         String cppCode = cppFile == CppFile.HEADER ? cppHeader : cppBody;
-        Matcher m = getLineOfCodeMatcher(cppCode, keywords);
+        Matcher m = getLineOfCodeMatcher(cppCode, regex);
         while (m.find()) {
             cppCode = Utils.replaceSubString(cppCode, m.start(), m.end() + 2, "");
-            m = getLineOfCodeMatcher(cppCode, keywords);
+            m = getLineOfCodeMatcher(cppCode, regex);
         }
         
         if (cppFile == CppFile.HEADER)

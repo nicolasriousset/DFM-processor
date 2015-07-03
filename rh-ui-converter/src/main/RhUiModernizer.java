@@ -106,13 +106,13 @@ public class RhUiModernizer {
         
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
         rules.add(new CompositeRule().addRule(new ChangeBaseClass("TFormExtented")).addRule(new AddInclude(CppFile.HEADER, "def_tform.h")));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "On empeche la fenetre de se déplacer"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "GetSystemMenu(Handle"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "RemoveMenu"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "Center_Win"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "center_win"));        
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Width/2"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, "wPrinc->Height/2"));        
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QOn empeche la fenetre de se déplacer\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QGetSystemMenu(Handle\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QRemoveMenu\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QCenter_Win\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\Qcenter_win\\E.*"));        
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width/2\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height/2\\E.*"));        
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -134,6 +134,8 @@ public class RhUiModernizer {
             
             dfmReaderWriter.write(dfmFile, dfmRoot);
             cppReaderWriter.write(cppClass, headerFile, cppFile);
+            cppReaderWriter.reformat(headerFile);
+            cppReaderWriter.reformat(cppFile);
         } catch (IOException e) {
             log.severe(e.getMessage());
         } catch (InterruptedException e) {

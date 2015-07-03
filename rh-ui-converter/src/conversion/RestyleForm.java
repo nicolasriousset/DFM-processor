@@ -21,6 +21,7 @@ public class RestyleForm extends AConversionRule {
         dfmObject.properties().put("Font.Color", "clGray");
         dfmObject.properties().put("Font.Height", "-13");
         dfmObject.properties().put("Font.Name", "'Arial'");
+        dfmObject.properties().put("Position", "poDesigned");
         dfmObject.properties().put("TextHeight", "16");
         dfmObject.properties().put("Font.Style", "[]");
         dfmObject.properties().put("Constraints.MinHeight", Utils.add(dfmObject.properties().get("ClientHeight"), 39));

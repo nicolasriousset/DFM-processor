@@ -20,7 +20,7 @@ public class AddInclude extends AConversionRule {
 
     @Override
     protected boolean doApply(DfmObject dfmObject, CppClass cppClass) {
-        return cppClass.addHeader(dest, newHeader);
+        return cppClass.addIncludeHeader(dest, newHeader);
     }
 
 }

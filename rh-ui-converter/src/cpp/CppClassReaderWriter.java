@@ -14,15 +14,30 @@ public class CppClassReaderWriter {
     }
 
     public void write(CppClass cppClass, File aCppHeader, File aCppBody) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppHeader.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppHeader.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
             writer.write(cppClass.getCppHeader());
         } catch (IOException e) {
             e.printStackTrace();
-        }        
+        }
 
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppBody.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(aCppBody.getAbsolutePath()), StandardCharsets.ISO_8859_1, StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING)) {
             writer.write(cppClass.getCppBody());
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void reformat(File cppFile) {
+        try {
+            Process process = new ProcessBuilder("D:\\astyle\\bin\\astyle.exe", cppFile.getAbsolutePath()).start();
+            process.waitFor();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }        
     }

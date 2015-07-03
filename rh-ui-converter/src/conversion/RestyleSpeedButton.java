@@ -85,7 +85,7 @@ public class RestyleSpeedButton extends AConversionRule {
             if (imageId != null) {
                 cppClass.appendToApplyStyleMethod(String.format("    ImageManager::GetInstance().LoadBitmap(%s->Glyph, ImageManager::%s);",
                         dfmObject.getName(), imageId));
-                cppClass.addHeader(CppFile.BODY, "ImageManager.h");
+                cppClass.addIncludeHeader(CppFile.BODY, "ImageManager.h");
             }
 
             return true;

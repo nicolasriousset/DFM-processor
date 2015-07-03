@@ -1,6 +1,7 @@
 package conversion;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 import com.google.common.base.Joiner;
 
@@ -129,8 +130,9 @@ public class RestyleSpreadPanel extends AConversionRule {
             String style = button.properties().get("Style");
             if (button.isInstanceOf("TToolButton") && style != null && style.compareTo("tbsSeparator") == 0) {
                 toolbar.removeChild(i);
-                cppClass.removeLineOfCode(CppFile.HEADER, button.getName());
-                cppClass.removeLineOfCode(CppFile.BODY, button.getName());
+                String regex = String.format(".*\\W%s\\W.*", Pattern.quote(button.getName())); 
+                cppClass.removeLineOfCode(CppFile.HEADER, regex);
+                cppClass.removeLineOfCode(CppFile.BODY, regex);
             }
         }
         try {            
@@ -139,7 +141,7 @@ public class RestyleSpreadPanel extends AConversionRule {
             e.printStackTrace();
             result = false;
         }
-        cppClass.addHeader(CppFile.BODY, "ImageManager.h");
+        cppClass.addIncludeHeader(CppFile.BODY, "ImageManager.h");
        
         
         // Updating title image properties
@@ -179,6 +181,7 @@ public class RestyleSpreadPanel extends AConversionRule {
         String onResizeMethodCode = String.format(rawCode, spread.getName());
         try {
             cppClass.createMethodOrAppendTo(Visibility.PUBLISHED, "__fastcall", onResizeMethodName, "TObject *Sender", onResizeMethodCode, "");
+            cppClass.addIncludeHeader(CppFile.BODY, "Apparence.h");
             mainForm.properties().put("OnResize", onResizeMethodName);
         } catch (CppClassReaderWriterException e) {
             e.printStackTrace();
