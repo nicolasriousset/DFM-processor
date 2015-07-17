@@ -12,7 +12,10 @@ public class RestyleBevel extends AConversionRule {
 
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
-        return dfmObject.isInstanceOf("TBevel") && dfmObject.properties().get("Shape").compareTo("bsBox") == 0;
+        if (!dfmObject.isInstanceOf("TBevel"))
+            return false;
+        String shape = dfmObject.properties().get("Shape");
+        return shape == null || shape.compareTo("bsBox") == 0;
     }
 
     @Override

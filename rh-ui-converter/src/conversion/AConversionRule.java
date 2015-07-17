@@ -13,7 +13,7 @@ public abstract class AConversionRule {
         if (!isApplicable(dfmObject, cppClass))
             return false;
 
-        log.info("Applying " + this.getClass().getName());
+        log.info("Applying " + this.getClass().getName() + " to " + dfmObject.getName());
         return doApply(dfmObject, cppClass);
     }
 

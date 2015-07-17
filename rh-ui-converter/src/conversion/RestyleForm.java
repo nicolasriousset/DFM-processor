@@ -24,8 +24,12 @@ public class RestyleForm extends AConversionRule {
         dfmObject.properties().put("Position", "poDesigned");
         dfmObject.properties().put("TextHeight", "16");
         dfmObject.properties().put("Font.Style", "[]");
-        dfmObject.properties().put("Constraints.MinHeight", Utils.add(dfmObject.properties().get("ClientHeight"), 39));
-        dfmObject.properties().put("Constraints.MinWidth", Utils.add(dfmObject.properties().get("ClientWidth"), 16));
+        
+        String borderStyle = dfmObject.properties().get("BorderStyle"); 
+        if (borderStyle == null || borderStyle.compareTo("bsNone") != 0) {
+            dfmObject.properties().put("Constraints.MinHeight", Utils.add(dfmObject.properties().get("ClientHeight"), 39));
+            dfmObject.properties().put("Constraints.MinWidth", Utils.add(dfmObject.properties().get("ClientWidth"), 16));
+        }
         
         return true;
     }

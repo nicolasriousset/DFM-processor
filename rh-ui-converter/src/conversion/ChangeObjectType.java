@@ -5,17 +5,17 @@ import cpp.CppClassReaderWriterException;
 import dfm.DfmObject;
 
 public class ChangeObjectType extends AConversionRule {
-    String oldObjectType;
+    String currentObjectTypeRegEx;
     String newObjectType;
     
-    public ChangeObjectType(String currentObjectType, String newObjectType) {
-        this.oldObjectType = currentObjectType;
+    public ChangeObjectType(String currentObjectTypeRegEx, String newObjectType) {
+        this.currentObjectTypeRegEx = currentObjectTypeRegEx;
         this.newObjectType = newObjectType;
     }
     
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
-        return dfmObject.getTypeName().compareTo(oldObjectType) == 0;
+        return dfmObject.getTypeName().matches(currentObjectTypeRegEx);
     }
 
     @Override

@@ -27,22 +27,22 @@ public class RhUiModernizer {
         for (char ch : fileMask.toCharArray()) {
             switch (ch) {
             case '*':
-                builder.append(".*");
+            builder.append(".*");
                 break;
             case '?':
-                builder.append(".");
+            builder.append(".");
                 break;
             default:
-                if (!Character.isLetterOrDigit(ch))
-                    builder.append("\\");
-                builder.append(ch);
-            }            
+            if (!Character.isLetterOrDigit(ch))
+                builder.append("\\");
+            builder.append(ch);
+            }
         }
         builder.append("(?-i)");
         String regex = builder.toString();
         return regex;
     }
-    
+
     public void run(File fileMask) {
         try {
 
@@ -70,27 +70,30 @@ public class RhUiModernizer {
     }
 
     private void updateDfmObjects(DfmObject dfmObject, CppClass cppClass) {
-        final String EDIT_BOX_HEIGHT = "24";
-        
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
         rules.add(new RestyleSpeedButton("Fermer", "IMG_FERMER", RhConst.BOUTON_FERMER_GLYPH));
         rules.add(new RestyleSpeedButton("Valider", "IMG_OK", RhConst.BOUTON_VALIDER_GLYPH));
         rules.add(new RestyleSpeedButton("Annuler", "IMG_ANNULER", RhConst.BOUTON_ANNULER_GLYPH));
         rules.add(new RestyleSpeedButton());
-        rules.add(new RestyleForm());        
+        rules.add(new RestyleForm());
+        
+        rules.add(new CompositeRule(new ChangeObjectType("TfpText", "TColoredEdit"), new AddInclude(CppFile.HEADER, "ColoredEdit.h"), new RemoveProperty("ControlData"), new RemoveProperty("DataBindings")));
         rules.add(new CompositeRule(new ChangeObjectType("TEdit", "TColoredEdit"), new AddInclude(CppFile.HEADER, "ColoredEdit.h")));
+        rules.add(new CompositeRule(new ChangeObjectType("TGroupBox", "TColoredGroupBox"), new AddInclude(CppFile.HEADER, "ColoredGroupBox.h")));
         rules.add(new CompositeRule(new ChangeObjectType("TMaskEdit", "TColoredMaskEdit"), new AddInclude(CppFile.HEADER, "ColoredMaskEdit.h")));
-        rules.add(new CompositeRule(new ChangeObjectType("TComboBox", "TComboBoxEx"), new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
-        rules.add(new CompositeRule(new ChangeObjectType("TComboBox98", "TComboBoxEx"), new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));
-        rules.add(new ChangePropertyValue("TColoredEdit", "Height", EDIT_BOX_HEIGHT));
-        rules.add(new ChangePropertyValue("TColoredMaskEdit", "Height", EDIT_BOX_HEIGHT));
+        rules.add(new CompositeRule(new ChangeObjectType("(TComboBox)|(TComboBox98)", "TComboBoxEx"), new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));        
+        
+        rules.add(new ChangePropertyValue("(TComboBoxEx)|(TColoredEdit)|(TColoredMaskEdit)|(TfpDateTime)|(TfpText)|(TfpMask)|(TfpDoubleSingle)", "Height", "24"));
+        rules.add(new ChangePropertyValue("(TColoredEdit)|(TColoredMaskEdit)", "AutoSize", "false"));
+        
+        rules.add(new UseParentFont());
+        rules.add(new ChangeFont("(TComboBoxEx)|(ColoredEdit)|(TColoredMaskEdit)"));
+        
+        rules.add(new ChangePropertyValue("TImage", "Transparent", "True"));
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
         rules.add(new RestyleSpreadPanel());
-        rules.add(new RestyleBevel());
-        rules.add(new UseParentFont());
-        rules.add(new ChangeFont("TComboBoxEx"));
-        rules.add(new ChangeFont("TColoredEdit"));
-        rules.add(new ChangeFont("TColoredMaskEdit"));
+        rules.add(new RestyleBevel());        
+        // TODO : convertir les TfpText en TColoredEdit (tester avec recrut)
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -103,22 +106,22 @@ public class RhUiModernizer {
     }
 
     void updateCppCode(DfmObject dfmObject, CppClass cppClass) {
-        
+
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
-        rules.add(new CompositeRule().addRule(new ChangeBaseClass("TFormExtented")).addRule(new AddInclude(CppFile.HEADER, "def_tform.h")));
+        rules.add(new CompositeRule(new ChangeBaseClass("TFormExtented", new BaseClassTypeCheck("TForm")), new AddInclude(CppFile.HEADER, "def_tform.h")));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QOn empeche la fenetre de se déplacer\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QGetSystemMenu(Handle\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QRemoveMenu\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QCenter_Win\\E.*"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\Qcenter_win\\E.*"));        
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\Qcenter_win\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width/2\\E.*"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height/2\\E.*"));        
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height/2\\E.*"));
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
         }
     }
-    
+
     private void ProcessDfm(File dfmFile) {
         try {
             log.info("Processing " + dfmFile.getAbsolutePath());
@@ -127,15 +130,16 @@ public class RhUiModernizer {
             DfmObject dfmRoot = dfmReaderWriter.read(dfmFile);
             File headerFile = Utils.replaceExtension(dfmFile, "h");
             File cppFile = Utils.replaceExtension(dfmFile, "cpp");
-            CppClass cppClass = cppReaderWriter.read(headerFile, cppFile);            
-            
-            updateDfmObjects(dfmRoot, cppClass);            
+            CppClass cppClass = cppReaderWriter.read(headerFile, cppFile);
+
+            updateDfmObjects(dfmRoot, cppClass);
             updateCppCode(dfmRoot, cppClass);
-            
+
             dfmReaderWriter.write(dfmFile, dfmRoot);
             cppReaderWriter.write(cppClass, headerFile, cppFile);
             cppReaderWriter.reformat(headerFile);
             cppReaderWriter.reformat(cppFile);
+            log.info(dfmFile.getAbsolutePath() + " processed");
         } catch (IOException e) {
             log.severe(e.getMessage());
         } catch (InterruptedException e) {

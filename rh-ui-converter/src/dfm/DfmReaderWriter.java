@@ -1,4 +1,5 @@
 package dfm;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +22,7 @@ public class DfmReaderWriter {
     DfmObject           rootObject;
     DfmObject           currentObject;
     String              currentTag;
+    StringBuilder       currentValue;
     ParsingState        state            = ParsingState.WAITING_OBJECT;
 
     enum ParsingState {
@@ -29,6 +31,7 @@ public class DfmReaderWriter {
 
     public DfmObject read(File dfmFile) throws InterruptedException, IOException, DfmReaderWriterException {
         File txtFile = dfmToTxt(dfmFile);
+        currentValue = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(txtFile.getAbsoluteFile()))) {
 
             String line;
@@ -97,13 +100,13 @@ public class DfmReaderWriter {
             state = ParsingState.READING_OBJECT;
         } else if (tokens.size() == 2) {
             String value = tokens.get(1);
-            if (value.startsWith("{")) {
-                state = ParsingState.READING_MULTILINE_DATA;
-            } else if (value.startsWith("(")) {
-                state = ParsingState.READING_MULTILINE_STRING;
+            if (value.startsWith("{") || value.startsWith("(")) {
+                state = value.startsWith("{") ? ParsingState.READING_MULTILINE_DATA : ParsingState.READING_MULTILINE_STRING;
+                currentValue.setLength(0);
+                currentValue.append(value);
+            } else {
+                currentObject.properties().put(currentTag, value);
             }
-
-            currentObject.properties().put(currentTag, value);
         } else if (tokens.size() == 1) {
             currentObject.properties().put(currentTag, "");
         } else {
@@ -112,10 +115,13 @@ public class DfmReaderWriter {
     }
 
     void parseMultilineProperty(String line, String endOfPropertyDelim) {
-        line = currentObject.properties().get(currentTag) + "\r\n" + line.trim();
-        currentObject.properties().put(currentTag, line);
-        if (line.endsWith(endOfPropertyDelim))
+        currentValue.append("\r\n");
+        currentValue.append(line.trim());
+        if (line.endsWith(endOfPropertyDelim)) {
+            currentObject.properties().put(currentTag, currentValue.toString());
+            currentValue.setLength(0);
             state = ParsingState.READING_OBJECT;
+        }
     }
 
     void parseLine(String line) throws DfmReaderWriterException {
@@ -149,9 +155,9 @@ public class DfmReaderWriter {
         FileUtils.deleteQuietly(outputFile);
         Process process = new ProcessBuilder("C:\\Borland\\CBuilder4\\Bin\\convert.exe", inputFile.getAbsolutePath()).start();
         process.waitFor();
-        return outputFile;        
+        return outputFile;
     }
-    
+
     private File dfmToTxt(File dfmFile) throws InterruptedException, IOException, DfmReaderWriterException {
         return convert(dfmFile);
     }
@@ -164,7 +170,7 @@ public class DfmReaderWriter {
         String indent = StringUtils.repeat("  ", indentLevel);
         String line = String.format("%s%s %s : %s%n", indent, TAG_OBJECT_START, rootObject.getName(), rootObject.getTypeName());
         writer.write(line);
-        
+
         // Writing properties
         for (String propertyName : rootObject.properties().keySet()) {
             line = String.format("%s  %s = %s%n", indent, propertyName, rootObject.properties().get(propertyName));
@@ -173,21 +179,20 @@ public class DfmReaderWriter {
 
         // Writing child objects
         for (DfmObject child : rootObject) {
-            write(writer, child, indentLevel+1);
+            write(writer, child, indentLevel + 1);
         }
-        
+
         line = String.format("%s%s%n", indent, TAG_OBJECT_END);
         writer.write(line);
     }
-    
+
     public void write(File dfmFile, DfmObject rootObject) throws InterruptedException, IOException, DfmReaderWriterException {
         File txtFile = new File(FilenameUtils.removeExtension(dfmFile.getAbsolutePath()) + ".txt");
-        try (FileWriter writer = new FileWriter(txtFile.getAbsoluteFile())) {            
+        try (FileWriter writer = new FileWriter(txtFile.getAbsoluteFile())) {
             write(writer, rootObject, 0);
         }
-        
+
         txtToDfm(txtFile);
     }
 
-    
 }

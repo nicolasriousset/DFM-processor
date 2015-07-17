@@ -5,13 +5,13 @@ import cpp.CppClass;
 import dfm.DfmObject;
 
 public class ChangePropertyValue extends AConversionRule {
-    String objectType;
+    String objectTypeRegEx;
     String propName; 
     String propValue;
     IConversionCondition condition;
     
-    public ChangePropertyValue(String anObjectType, String aPropName, String aPropValue) {
-        objectType = anObjectType;
+    public ChangePropertyValue(String anObjectTypeRegEx, String aPropName, String aPropValue) {
+        objectTypeRegEx = anObjectTypeRegEx;
         propName = aPropName;
         propValue = aPropValue;
     }
@@ -23,7 +23,8 @@ public class ChangePropertyValue extends AConversionRule {
 
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
-        if (dfmObject.getTypeName().compareTo(objectType) != 0)
+        String typeName = dfmObject.getTypeName();
+        if (!typeName.matches(objectTypeRegEx))
             return false;
         
         if (condition != null && !condition.isVerified(dfmObject, cppClass))
