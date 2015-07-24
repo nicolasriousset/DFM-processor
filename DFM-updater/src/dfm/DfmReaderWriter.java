@@ -91,14 +91,16 @@ public class DfmReaderWriter {
         if (tokens.size() == 0) {
             return;
         }
-
-        currentTag = tokens.get(0);
-        if (currentTag.startsWith(TAG_OBJECT_START + " ")) {
+        
+        if (tokens.get(0).startsWith(TAG_OBJECT_START + " ")) {
+        	currentTag = tokens.get(0);
             parseObjectStart(line);
-        } else if (currentTag.compareToIgnoreCase(TAG_OBJECT_END) == 0) {
+        } else if (tokens.get(0).compareToIgnoreCase(TAG_OBJECT_END) == 0) {
+        	currentTag = tokens.get(0);
             currentObject = currentObject.getParent();
             state = ParsingState.READING_OBJECT;
         } else if (tokens.size() == 2) {
+        	currentTag = tokens.get(0);
             String value = tokens.get(1);
             if (value.startsWith("{") || value.startsWith("(")) {
                 state = value.startsWith("{") ? ParsingState.READING_MULTILINE_DATA : ParsingState.READING_MULTILINE_STRING;
@@ -108,7 +110,13 @@ public class DfmReaderWriter {
                 currentObject.properties().put(currentTag, value);
             }
         } else if (tokens.size() == 1) {
-            currentObject.properties().put(currentTag, "");
+        	if (tokens.get(0).startsWith("\'")) {
+        		// Ce n'set pas un nouveau tag, mais une string sur plusieurs lignes
+        		currentObject.properties().put(currentTag, currentObject.properties().get(currentTag) + tokens.get(0));
+        	} else {
+        		currentTag = tokens.get(0);
+        		currentObject.properties().put(currentTag, "");
+        	}
         } else {
             throw new DfmReaderWriterException("Incapable de traiter la ligne : " + line);
         }

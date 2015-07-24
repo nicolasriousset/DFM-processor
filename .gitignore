@@ -43,5 +43,5 @@ Temporary Items
 .apdisk
 *.class
 RemoteSystemsTempFiles/
-rh-ui-converter/target/
+DFM-updater/target/
 .metadata/

@@ -12,6 +12,12 @@ public class DfmObject implements Iterable<DfmObject> {
     DfmObject                     parent;
     LinkedHashMap<String, String> properties;
 
+    public DfmObject(String aTypeName, String aName) {
+    	this();
+    	name = aName;
+    	typeName = aTypeName;
+    }
+    
     public DfmObject() {
         children = new ArrayList<DfmObject>();
         properties = new LinkedHashMap<String, String>();
@@ -36,6 +42,11 @@ public class DfmObject implements Iterable<DfmObject> {
     public void addChild(DfmObject aChild) {
         children.add(aChild);
         aChild.parent = this;
+    }
+
+    public void removeChild(DfmObject aChild) {
+        children.remove(aChild);
+        aChild.parent = null;
     }
 
     public DfmObject getParent() {

@@ -77,6 +77,7 @@ public class RhUiModernizer {
         rules.add(new RestyleSpeedButton());
         rules.add(new RestyleForm());
         
+        rules.add(new TvaToTfpSpread());
         rules.add(new CompositeRule(new ChangeObjectType("TfpText", "TColoredEdit"), new AddInclude(CppFile.HEADER, "ColoredEdit.h"), new RemoveProperty("ControlData"), new RemoveProperty("DataBindings")));
         rules.add(new CompositeRule(new ChangeObjectType("TEdit", "TColoredEdit"), new AddInclude(CppFile.HEADER, "ColoredEdit.h")));
         rules.add(new CompositeRule(new ChangeObjectType("TGroupBox", "TColoredGroupBox"), new AddInclude(CppFile.HEADER, "ColoredGroupBox.h")));
@@ -92,8 +93,8 @@ public class RhUiModernizer {
         rules.add(new ChangePropertyValue("TImage", "Transparent", "True"));
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
         rules.add(new RestyleSpreadPanel());
-        rules.add(new RestyleBevel());        
-        // TODO : convertir les TfpText en TColoredEdit (tester avec recrut)
+        rules.add(new RestyleBevel());
+               
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);

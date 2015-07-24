@@ -24,6 +24,7 @@ public class RestyleForm extends AConversionRule {
         dfmObject.properties().put("Position", "poDesigned");
         dfmObject.properties().put("TextHeight", "16");
         dfmObject.properties().put("Font.Style", "[]");
+        dfmObject.properties().put("Ctl3D", "false");
         
         String borderStyle = dfmObject.properties().get("BorderStyle"); 
         if (borderStyle == null || borderStyle.compareTo("bsNone") != 0) {
