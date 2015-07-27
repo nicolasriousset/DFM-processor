@@ -74,7 +74,7 @@ public class DfmObject implements Iterable<DfmObject> {
         if (getTypeName() == null || typeName == null)
             return false;
 
-        return getTypeName().compareTo(typeName) == 0;
+        return getTypeName().matches(typeName);
     }
 
     public void removeChild(int index) {

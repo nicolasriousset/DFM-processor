@@ -92,7 +92,7 @@ public class RestyleSpreadPanel extends AConversionRule {
 
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
-        if (dfmObject.getTypeName().compareTo("TPanel") != 0)
+        if (!dfmObject.isInstanceOf("TPanel"))
             return false;
 
         if (findSpreadToolBar(dfmObject) == null)

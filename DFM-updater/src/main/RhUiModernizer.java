@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+import com.google.common.collect.Iterables;
 import com.google.common.io.PatternFilenameFilter;
 
 import conversion.*;
@@ -101,7 +102,11 @@ public class RhUiModernizer {
         }
 
         // Recursively apply to children
-        for (DfmObject childObject : dfmObject) {
+        // the list of children may be modified by some rules
+        // To avoid ConcurrentModificationException, we convert it to an array 
+        // before iterating over it 
+        DfmObject[] children = Iterables.toArray(dfmObject, DfmObject.class);
+        for (DfmObject childObject : children) {
             updateDfmObjects(childObject, cppClass);
         }
     }

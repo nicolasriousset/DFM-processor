@@ -15,7 +15,9 @@ public class RestyleBevel extends AConversionRule {
         if (!dfmObject.isInstanceOf("TBevel"))
             return false;
         String shape = dfmObject.properties().get("Shape");
-        return shape == null || shape.compareTo("bsBox") == 0;
+        return shape == null
+                || shape.compareTo("bsBox") == 0 || shape.compareTo("bsTopLine") == 0 || shape.compareTo("bsBottomLine") == 0
+                || shape.compareTo("bsFrame") == 0;
     }
 
     @Override

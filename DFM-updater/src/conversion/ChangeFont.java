@@ -37,7 +37,7 @@ public class ChangeFont extends AConversionRule {
         dfmObject.properties().put("Font.Height", fontHeight);
         dfmObject.properties().put("Font.Name", fontName);
         dfmObject.properties().put("Font.Style", fontStyle);
-        dfmObject.properties().put("ParentFont", "False");
+        dfmObject.properties().put("ParentFont", "false");
         return true;
     }
 

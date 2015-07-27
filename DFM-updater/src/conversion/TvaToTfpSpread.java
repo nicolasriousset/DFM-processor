@@ -10,14 +10,16 @@ public class TvaToTfpSpread extends AConversionRule {
 
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
-        return dfmObject.getTypeName().compareTo("TvaSpread") == 0;
+        return dfmObject.isInstanceOf("TvaSpread");
     }
 
     @Override
     protected boolean doApply(DfmObject dfmObject, CppClass cppClass) {
         try {
             replaceTvaSpreadByTfpSpread(dfmObject, cppClass);
-            addSpreadToolbar(dfmObject, cppClass);
+            DfmObject pnlFondSpread = embedInSpreadPanel(dfmObject, cppClass);
+            RestyleSpreadPanel restyle = new RestyleSpreadPanel();
+            restyle.apply(pnlFondSpread, cppClass);
             return true;
         } catch (CppClassReaderWriterException e) {
             e.printStackTrace();
@@ -34,15 +36,15 @@ public class TvaToTfpSpread extends AConversionRule {
         cppClass.replace(CppFile.BODY, "FPSpread_OCX", "FPSpreadADO_OCX");
         cppClass.replace(CppFile.BODY, "Fpspread_tlb", "Fpspreadado_tlb");
 
-        cppClass.replace(CppFile.BODY, "ColorUserSpread", "DesignSpread7");
-        cppClass.replace(CppFile.BODY, "ColorInSpread", "ColorInSpread7");
-        cppClass.replace(CppFile.BODY, "ActiveCellInSpread", "ActiveCellInSpread7");
+        cppClass.replace(CppFile.BODY, "ColorUserSpread(", "DesignSpread7(");
+        cppClass.replace(CppFile.BODY, "ColorInSpread(", "ColorInSpread7(");
+        cppClass.replace(CppFile.BODY, "ActiveCellInSpread(", "ActiveCellInSpread7(");
         cppClass.replace(CppFile.BODY, "RechercheInSpreadExceptLine(", "RechercheInSpread7ExceptLine(");
         cppClass.replace(CppFile.BODY, "RechercheInSpread(", "RechercheInSpread7(");
-        cppClass.replace(CppFile.BODY, "TriInSpread", "TriInSpread7");
-        cppClass.replace(CppFile.BODY, "CentreColonneSpread", "CentreColonneSpread7");
-        cppClass.replace(CppFile.BODY, "DelRowInSpread", "DelRowInSpread7");
-        cppClass.replace(CppFile.BODY, "DesignSpread", "DesignSpread7");        
+        cppClass.replace(CppFile.BODY, "TriInSpread(", "TriInSpread7(");
+        cppClass.replace(CppFile.BODY, "CentreColonneSpread(", "CentreColonneSpread7(");
+        cppClass.replace(CppFile.BODY, "DelRowInSpread(", "DelRowInSpread7(");
+        cppClass.replace(CppFile.BODY, "DesignSpread(", "DesignSpread7(");        
         
         cppClass.replace(CppFile.BODY, "SS_CELL_TYPE_COMBOBOX", "CellTypeComboBox");
         cppClass.replace(CppFile.BODY, "SS_CELL_TYPE_STATIC_TEXT", "CellTypeStaticText");
@@ -55,11 +57,12 @@ public class TvaToTfpSpread extends AConversionRule {
         cppClass.replace(CppFile.BODY, "SS_CELL_H_ALIGN_LEFT", "TypeHAlignLeft");
         
         cppClass.replace(CppFile.BODY, "SS_CELL_EDIT_CHAR_SET_ALPHANUMERIC", "TypeEditCharSetAlphanumeric");
+        cppClass.replace(CppFile.BODY, "SS_CELL_EDIT_CHAR_SET_ASCII", "TypeEditCharSetASCII");        
     }
 
-    private void addSpreadToolbar(DfmObject dfmObject, CppClass cppClass) throws CppClassReaderWriterException {
+    private DfmObject embedInSpreadPanel(DfmObject dfmObject, CppClass cppClass) throws CppClassReaderWriterException {
         if (dfmObject == null || dfmObject.getParent() == null)
-            return;
+            return null;
 
         DfmObject spread = dfmObject;
         DfmObject parent = dfmObject.getParent();
@@ -209,5 +212,7 @@ public class TvaToTfpSpread extends AConversionRule {
         spread.properties().put("Left", "0");
         spread.properties().put("Top", "0");
         spread.properties().put("Align", "alClient");
+        
+        return pnlFondSpread;
     }
 }
