@@ -2,6 +2,8 @@ package conversion;
 
 import java.util.ArrayList;
 
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Joiner;
@@ -60,6 +62,7 @@ public class RestyleSpeedButton extends AConversionRule {
     
     private void updateSizeAndPos(DfmObject dfmObject) {
         int currentWidth = Integer.parseInt(dfmObject.properties().get("Width"));
+        int currentHeight = Integer.parseInt(dfmObject.properties().get("Height"));
         int newHeight = currentWidth > 32 ? 55 : (currentWidth > 16 ? 24 : 16);
         int newWidth = currentWidth > 32 ? 64 : (currentWidth > 16 ? 24 : 16);
         int parentWidth = 0;
@@ -74,8 +77,18 @@ public class RestyleSpeedButton extends AConversionRule {
             parentHeight = Integer.parseInt(dfmObject.getParent().properties().get("Height"));
         int MARGIN = 7;
         
-        dfmObject.properties().put("Height", String.valueOf(newHeight));
-        dfmObject.properties().put("Width", String.valueOf(newWidth));
+        double sideRatio = Math.min((double)currentHeight, (double)currentWidth) / Math.max((double)currentHeight, (double)currentWidth);
+        if (sideRatio >= 0.6)
+        {
+            // on ne modifie les dimensions que pour les boutons à peu près carrés 
+            dfmObject.properties().put("Height", String.valueOf(newHeight));
+            dfmObject.properties().put("Width", String.valueOf(newWidth));            
+        }
+        else
+        {
+            newHeight = currentHeight;
+            newWidth = currentWidth;
+        }
 
         if (dfmObject.isCloseToBottom()) {
             dfmObject.properties().put("Top", String.valueOf(parentHeight - newHeight - MARGIN));

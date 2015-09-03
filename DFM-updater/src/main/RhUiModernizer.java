@@ -85,7 +85,7 @@ public class RhUiModernizer {
         rules.add(new CompositeRule(new ChangeObjectType("TMaskEdit", "TColoredMaskEdit"), new AddInclude(CppFile.HEADER, "ColoredMaskEdit.h")));
         rules.add(new CompositeRule(new ChangeObjectType("(TComboBox)|(TComboBox98)", "TComboBoxEx"), new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));        
         
-        rules.add(new ChangePropertyValue("(TComboBoxEx)|(TColoredEdit)|(TColoredMaskEdit)|(TfpDateTime)|(TfpText)|(TfpMask)|(TfpDoubleSingle)", "Height", "24"));
+        rules.add(new ChangePropertyValue("(TComboBoxEx)|(TColoredEdit)|(TColoredMaskEdit)|(TfpDateTime)|(TfpText)|(TfpMask)|(TfpDoubleSingle)|(TfpLongInteger)", "Height", "24"));
         rules.add(new ChangePropertyValue("(TColoredEdit)|(TColoredMaskEdit)", "AutoSize", "false"));
         
         rules.add(new UseParentFont());
@@ -120,8 +120,8 @@ public class RhUiModernizer {
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QRemoveMenu\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QCenter_Win\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\Qcenter_win\\E.*"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width/2\\E.*"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height/2\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height\\E.*"));
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
