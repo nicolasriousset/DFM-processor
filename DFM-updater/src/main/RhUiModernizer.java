@@ -72,7 +72,9 @@ public class RhUiModernizer {
 
     private void updateDfmObjects(DfmObject dfmObject, CppClass cppClass) {
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
-        rules.add(new RestyleSpeedButton("Fermer", "IMG_FERMER", RhConst.BOUTON_FERMER_GLYPH));
+        rules.add(new RenameProperty("TfpSpread", "OnClick", "On_Click"));        
+        // rules.add(new CompositeRule(new ChangeObjectType("TComboBoxEx", "TColoredComboBox"), new AddInclude(CppFile.HEADER, "ColoredComboBox.h")));
+        /*rules.add(new RestyleSpeedButton("Fermer", "IMG_FERMER", RhConst.BOUTON_FERMER_GLYPH));
         rules.add(new RestyleSpeedButton("Valider", "IMG_OK", RhConst.BOUTON_VALIDER_GLYPH));
         rules.add(new RestyleSpeedButton("Annuler", "IMG_ANNULER", RhConst.BOUTON_ANNULER_GLYPH));
         rules.add(new RestyleSpeedButton());
@@ -83,7 +85,7 @@ public class RhUiModernizer {
         rules.add(new CompositeRule(new ChangeObjectType("TEdit", "TColoredEdit"), new AddInclude(CppFile.HEADER, "ColoredEdit.h")));
         rules.add(new CompositeRule(new ChangeObjectType("TGroupBox", "TColoredGroupBox"), new AddInclude(CppFile.HEADER, "ColoredGroupBox.h")));
         rules.add(new CompositeRule(new ChangeObjectType("TMaskEdit", "TColoredMaskEdit"), new AddInclude(CppFile.HEADER, "ColoredMaskEdit.h")));
-        rules.add(new CompositeRule(new ChangeObjectType("(TComboBox)|(TComboBox98)", "TComboBoxEx"), new AddInclude(CppFile.HEADER, "ComboBoxEx.h")));        
+        rules.add(new CompositeRule(new ChangeObjectType("(TComboBox)|(TComboBox98)", "TColoredComboBox"), new AddInclude(CppFile.HEADER, "ColoredComboBox.h")));        
         
         rules.add(new ChangePropertyValue("(TComboBoxEx)|(TColoredEdit)|(TColoredMaskEdit)|(TfpDateTime)|(TfpText)|(TfpMask)|(TfpDoubleSingle)|(TfpLongInteger)", "Height", "24"));
         rules.add(new ChangePropertyValue("(TColoredEdit)|(TColoredMaskEdit)", "AutoSize", "false"));
@@ -94,8 +96,12 @@ public class RhUiModernizer {
         rules.add(new ChangePropertyValue("TImage", "Transparent", "True"));
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
         rules.add(new RestyleSpreadPanel());
+<<<<<<< HEAD:rh-ui-converter/src/main/RhUiModernizer.java
+        rules.add(new RestyleBevel());*/        
+=======
         rules.add(new RestyleBevel());
                
+>>>>>>> origin/master:DFM-updater/src/main/RhUiModernizer.java
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -114,14 +120,23 @@ public class RhUiModernizer {
     void updateCppCode(DfmObject dfmObject, CppClass cppClass) {
 
         ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
-        rules.add(new CompositeRule(new ChangeBaseClass("TFormExtented", new BaseClassTypeCheck("TForm")), new AddInclude(CppFile.HEADER, "def_tform.h")));
+        rules.add(new ReplaceCode(CppFile.BOTH, "TVariant .CursorPos", "Variant *CursorPos"));        
+        rules.add(new ReplaceCode(CppFile.BOTH, "TVariant .Cancel", "Variant *Cancel"));
+        rules.add(new ReplaceCode(CppFile.BOTH, "TOLEBOOL .Cancel", "VARIANT_BOOL *Cancel"));
+        rules.add(new FixSpreadSetSetParams());
+        /*rules.add(new CompositeRule(new ChangeBaseClass("TFormExtented", new BaseClassTypeCheck("TForm")), new AddInclude(CppFile.HEADER, "def_tform.h")));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QOn empeche la fenetre de se déplacer\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QGetSystemMenu(Handle\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QRemoveMenu\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QCenter_Win\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\Qcenter_win\\E.*"));
+<<<<<<< HEAD:rh-ui-converter/src/main/RhUiModernizer.java
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width/2\\E.*"));
+        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height/2\\E.*"));*/
+=======
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height\\E.*"));
+>>>>>>> origin/master:DFM-updater/src/main/RhUiModernizer.java
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);

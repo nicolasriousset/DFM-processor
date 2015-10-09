@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
+import cpp.CppClass.CppFile;
+
 public class CppClass {
     private String cppBody;
     private String cppHeader;
@@ -12,7 +14,7 @@ public class CppClass {
     private String baseClassName;
 
     public enum CppFile {
-        HEADER, BODY
+        HEADER, BODY, BOTH
     };
 
     public CppClass(String aCppHeader, String aCppBody) throws CppClassReaderWriterException {
@@ -22,8 +24,19 @@ public class CppClass {
     }
 
     public boolean includesHeader(CppFile cppFile, String header) {
+<<<<<<< HEAD:rh-ui-converter/src/cpp/CppClass.java
+        if (cppFile == CppFile.BOTH)
+        {
+            if (includesHeader(CppFile.HEADER, header))
+                return true;
+            return includesHeader(CppFile.BODY, header);
+        }
+        
+        // dans la regexp, (?m) active le mode multiligne, pour que ^ et $ matchent les débuts et fins de chaque ligne
+=======
         // dans la regexp, (?m) active le mode multiligne, pour que ^ et $
         // matchent les débuts et fins de chaque ligne
+>>>>>>> origin/master:DFM-updater/src/cpp/CppClass.java
         // (?i) active l'insensibilité à la casse
         header = StringUtils.strip(header, "\"<>");
         Pattern p = Pattern.compile(String.format("(?m)^\\s*#include\\s+[<\"](?i)%s(?-i)[>\"]$", header));
@@ -32,6 +45,11 @@ public class CppClass {
     }
 
     public boolean addIncludeHeader(CppFile cppFile, String header) {
+        if (cppFile == CppFile.BOTH)
+        {
+            return addIncludeHeader(CppFile.HEADER, header) && addIncludeHeader(CppFile.BODY, header);            
+        }
+
         if (includesHeader(cppFile, header))
             return true;
 
@@ -69,8 +87,16 @@ public class CppClass {
         return cppBody;
     }
 
+    public void setCppBody(String cppbody) {
+        this.cppBody = cppbody;
+    }
+
     public String getCppHeader() {
         return cppHeader;
+    }
+
+    public void setCppHeader(String cppHeader) {
+        this.cppHeader = cppHeader;
     }
 
     Matcher getClassNameAndTypeMatcher() {
@@ -303,9 +329,15 @@ public class CppClass {
 
         cppHeader = Utils.replaceSubString(cppHeader, m.start(1), m.end(1), newTypeName);
     }
+<<<<<<< HEAD:rh-ui-converter/src/cpp/CppClass.java
+    
+    private static Matcher getLineOfCodeMatcher(String cppCode, String regex) {
+        String lineRegex = String.format("(?m)^%s$", regex); 
+=======
 
     private Matcher getLineOfCodeMatcher(String cppCode, String regex) {
         String lineRegex = String.format("(?m)^%s$", regex);
+>>>>>>> origin/master:DFM-updater/src/cpp/CppClass.java
         Pattern p = Pattern.compile(lineRegex);
         return p.matcher(cppCode);
     }
@@ -316,17 +348,62 @@ public class CppClass {
     }
 
     public void removeLineOfCode(CppFile cppFile, String regex) {
-        String cppCode = cppFile == CppFile.HEADER ? cppHeader : cppBody;
+        if (cppFile == CppFile.BOTH)
+        {
+            removeLineOfCode(CppFile.HEADER, regex);
+            removeLineOfCode(CppFile.BODY, regex);
+            return;
+        }
+        
+        if (cppFile == CppFile.HEADER)
+            cppBody = removeLineOfCode(cppBody, regex);
+        else
+            cppHeader = removeLineOfCode(cppHeader, regex);
+    }
+
+    public static String removeLineOfCode(String cppCode, String regex) {
         Matcher m = getLineOfCodeMatcher(cppCode, regex);
         while (m.find()) {
             cppCode = Utils.replaceSubString(cppCode, m.start(), m.end() + 2, "");
             m = getLineOfCodeMatcher(cppCode, regex);
         }
+<<<<<<< HEAD:rh-ui-converter/src/cpp/CppClass.java
+        
+        return cppCode;
+    }
+    
+    public void replaceCode(CppFile cppFile, String oldCodeRegex, String newCode) {
+        if (cppFile == CppFile.BOTH)
+        {
+            replaceCode(CppFile.HEADER, oldCodeRegex, newCode);
+            replaceCode(CppFile.BODY, oldCodeRegex, newCode);
+            return;
+        }
+        
+=======
 
+>>>>>>> origin/master:DFM-updater/src/cpp/CppClass.java
         if (cppFile == CppFile.HEADER)
-            cppHeader = cppCode;
+            cppBody = replaceCode(cppBody, oldCodeRegex, newCode);
         else
-            cppBody = cppCode;
+            cppHeader = replaceCode(cppHeader, oldCodeRegex, newCode);
+    }
+    
+    public String replaceCode(String cppCode, String oldCodeRegex, String newCode) {
+        Pattern p = Pattern.compile(oldCodeRegex);
+        Matcher m = p.matcher(cppCode);
+        while (m.find()) {
+            cppCode = Utils.replaceSubString(cppCode, m.start(), m.end(), newCode);
+            m = p.matcher(cppCode);
+        }
+        
+        return cppCode;
+    }    
+
+    public boolean containsCode(String regex) {
+        Pattern p = Pattern.compile(regex);       
+        Matcher m = p.matcher(regex);
+        return m.find();
     }
 
     public void addVariable(Visibility visibility, String variableType, String variableName) throws CppClassReaderWriterException {
