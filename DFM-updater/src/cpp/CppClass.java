@@ -5,8 +5,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
-import cpp.CppClass.CppFile;
-
 public class CppClass {
     private String cppBody;
     private String cppHeader;
@@ -24,7 +22,6 @@ public class CppClass {
     }
 
     public boolean includesHeader(CppFile cppFile, String header) {
-<<<<<<< HEAD:rh-ui-converter/src/cpp/CppClass.java
         if (cppFile == CppFile.BOTH)
         {
             if (includesHeader(CppFile.HEADER, header))
@@ -32,11 +29,8 @@ public class CppClass {
             return includesHeader(CppFile.BODY, header);
         }
         
-        // dans la regexp, (?m) active le mode multiligne, pour que ^ et $ matchent les débuts et fins de chaque ligne
-=======
         // dans la regexp, (?m) active le mode multiligne, pour que ^ et $
         // matchent les débuts et fins de chaque ligne
->>>>>>> origin/master:DFM-updater/src/cpp/CppClass.java
         // (?i) active l'insensibilité à la casse
         header = StringUtils.strip(header, "\"<>");
         Pattern p = Pattern.compile(String.format("(?m)^\\s*#include\\s+[<\"](?i)%s(?-i)[>\"]$", header));
@@ -329,15 +323,9 @@ public class CppClass {
 
         cppHeader = Utils.replaceSubString(cppHeader, m.start(1), m.end(1), newTypeName);
     }
-<<<<<<< HEAD:rh-ui-converter/src/cpp/CppClass.java
     
     private static Matcher getLineOfCodeMatcher(String cppCode, String regex) {
         String lineRegex = String.format("(?m)^%s$", regex); 
-=======
-
-    private Matcher getLineOfCodeMatcher(String cppCode, String regex) {
-        String lineRegex = String.format("(?m)^%s$", regex);
->>>>>>> origin/master:DFM-updater/src/cpp/CppClass.java
         Pattern p = Pattern.compile(lineRegex);
         return p.matcher(cppCode);
     }
@@ -367,7 +355,6 @@ public class CppClass {
             cppCode = Utils.replaceSubString(cppCode, m.start(), m.end() + 2, "");
             m = getLineOfCodeMatcher(cppCode, regex);
         }
-<<<<<<< HEAD:rh-ui-converter/src/cpp/CppClass.java
         
         return cppCode;
     }
@@ -380,9 +367,6 @@ public class CppClass {
             return;
         }
         
-=======
-
->>>>>>> origin/master:DFM-updater/src/cpp/CppClass.java
         if (cppFile == CppFile.HEADER)
             cppBody = replaceCode(cppBody, oldCodeRegex, newCode);
         else

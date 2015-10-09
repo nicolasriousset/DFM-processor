@@ -8,10 +8,15 @@ import java.util.logging.Logger;
 import com.google.common.collect.Iterables;
 import com.google.common.io.PatternFilenameFilter;
 
-import conversion.*;
-import conversion.condition.*;
-import cpp.*;
+import conversion.AConversionRule;
+import conversion.FixSpreadSetSetParams;
+import conversion.RenameProperty;
+import conversion.ReplaceCode;
+import cpp.CppClass;
 import cpp.CppClass.CppFile;
+import cpp.CppClassReaderWriter;
+import cpp.CppClassReaderWriterException;
+import cpp.Utils;
 import dfm.DfmObject;
 import dfm.DfmReaderWriter;
 import dfm.DfmReaderWriterException;
@@ -96,12 +101,7 @@ public class RhUiModernizer {
         rules.add(new ChangePropertyValue("TImage", "Transparent", "True"));
         rules.add(new ChangePropertyValue("TPanel", "ParentColor", "True", new PropertyValueIsNullOrEquals("Color", "clBtnFace")));
         rules.add(new RestyleSpreadPanel());
-<<<<<<< HEAD:rh-ui-converter/src/main/RhUiModernizer.java
         rules.add(new RestyleBevel());*/        
-=======
-        rules.add(new RestyleBevel());
-               
->>>>>>> origin/master:DFM-updater/src/main/RhUiModernizer.java
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);
@@ -130,13 +130,8 @@ public class RhUiModernizer {
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QRemoveMenu\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QCenter_Win\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\Qcenter_win\\E.*"));
-<<<<<<< HEAD:rh-ui-converter/src/main/RhUiModernizer.java
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width/2\\E.*"));
         rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height/2\\E.*"));*/
-=======
-        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Width\\E.*"));
-        rules.add(new RemoveLineOfCode(CppFile.BODY, ".*\\QwPrinc->Height\\E.*"));
->>>>>>> origin/master:DFM-updater/src/main/RhUiModernizer.java
 
         for (AConversionRule rule : rules) {
             rule.apply(dfmObject, cppClass);

@@ -2,8 +2,6 @@ package conversion;
 
 import java.util.ArrayList;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Joiner;
