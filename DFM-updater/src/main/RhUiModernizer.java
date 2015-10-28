@@ -1,6 +1,7 @@
 package main;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -9,9 +10,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.PatternFilenameFilter;
 
 import conversion.AConversionRule;
+import conversion.AddInclude;
 import conversion.FixSpreadSetSetParams;
 import conversion.RenameProperty;
 import conversion.ReplaceCode;
+import conversion.condition.IsContainingCode;
 import cpp.CppClass;
 import cpp.CppClass.CppFile;
 import cpp.CppClassReaderWriter;
@@ -77,7 +80,8 @@ public class RhUiModernizer {
 
 	private boolean updateDfmObjects(DfmObject dfmObject, CppClass cppClass) {
 		ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
-		rules.add(new RenameProperty("TfpSpread", "OnClick", "On_Click"));
+		// rules.add(new RenameProperty("TfpSpread", "On_Click", "OnClick"));
+		
 		// rules.add(new CompositeRule(new ChangeObjectType("TComboBoxEx",
 		// "TColoredComboBox"), new AddInclude(CppFile.HEADER,
 		// "ColoredComboBox.h")));
@@ -133,17 +137,20 @@ public class RhUiModernizer {
 		for (DfmObject childObject : children) {
 			updated = updateDfmObjects(childObject, cppClass) || updated;
 		}
-		
+
 		return updated;
 	}
 
 	boolean updateCppCode(DfmObject dfmObject, CppClass cppClass) {
 
 		ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
-		rules.add(new ReplaceCode(CppFile.BOTH, "TVariant .CursorPos", "Variant *CursorPos"));
-		rules.add(new ReplaceCode(CppFile.BOTH, "TVariant .Cancel", "Variant *Cancel"));
+		// rules.add(new AddInclude(CppFile.BODY, "<memory>", new IsContainingCode("auto_ptr<")));
+		
+		rules.add(new ReplaceCode(CppFile.BOTH, "TVariant .CursorPos", "VARIANT *CursorPos"));
+		rules.add(new ReplaceCode(CppFile.BOTH, "TVariant .Cancel", "VARIANT *Cancel"));
 		rules.add(new ReplaceCode(CppFile.BOTH, "TOLEBOOL", "VARIANT_BOOL"));
-		rules.add(new FixSpreadSetSetParams());
+		// rules.add(new FixSpreadSetSetParams());
+		
 		/*
 		 * rules.add(new CompositeRule(new ChangeBaseClass("TFormExtented", new
 		 * BaseClassTypeCheck("TForm")), new AddInclude(CppFile.HEADER,

@@ -3,10 +3,10 @@ package conversion.condition;
 import cpp.CppClass;
 import dfm.DfmObject;
 
-public class BaseClassTypeCheck implements IConversionCondition {
+public class IsDerivingFrom implements IConversionCondition {
     String expectedBaseClassName;
     
-    public BaseClassTypeCheck(String expectedBaseClassName) {
+    public IsDerivingFrom(String expectedBaseClassName) {
         this.expectedBaseClassName = expectedBaseClassName;
     }
     

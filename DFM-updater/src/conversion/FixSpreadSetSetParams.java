@@ -9,7 +9,8 @@ import dfm.DfmObject;
 
 public class FixSpreadSetSetParams extends AConversionRule {
     // Le troisième paramètre de SetText doit être converti en Variant 
-    private final String REGEX = "-> ?SetText\\((.*),(.*),(?!Variant)(.*)\\)";    
+    private final String REGEX = "-> ?SetText\\((.*),(.*),(?! ?TVariant)(.*)\\)";    
+	// private final String REGEX = "-> ?SetText\\((.*),(.*),(.*)AsString\\)";
     
     @Override
     public boolean isApplicable(DfmObject dfmObject, CppClass cppClass) {
@@ -24,7 +25,8 @@ public class FixSpreadSetSetParams extends AConversionRule {
         String cppCode = cppClass.getCppBody();
         Matcher m = p.matcher(cppCode);
         while (m.find()) {
-            String newCode = String.format("->SetText(%1s, %2s,Variant(%3s))", m.group(1), m.group(2), m.group(3));
+        	String newCode = String.format("->SetText(%1s, %2s, TVariant(%3s))", m.group(1), m.group(2), m.group(3));
+            // String newCode = String.format("->SetText(%1s, %2s,%3sAsVariant)", m.group(1), m.group(2), m.group(3));
             cppCode = Utils.replaceSubString(cppCode, m.start(), m.end(), newCode);
             m = p.matcher(cppCode);
         }

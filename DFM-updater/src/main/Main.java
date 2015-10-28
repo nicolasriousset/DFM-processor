@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Main {
     public static void main(String[] args) {
-        String fileMask = ".\\*.dfm";
+    	String fileMask = ".\\*.dfm";
         if (args.length > 0)
             fileMask = args[0];
 

@@ -3,11 +3,11 @@ package conversion.condition;
 import cpp.CppClass;
 import dfm.DfmObject;
 
-public class PropertyValueIsNullOrEquals implements IConversionCondition{
+public class IsPropertyValueNullOrEquals implements IConversionCondition{
     String propertyName;
     String propertyValue;
     
-    public PropertyValueIsNullOrEquals(String propertyName, String propertyValue) {
+    public IsPropertyValueNullOrEquals(String propertyName, String propertyValue) {
         this.propertyName = propertyName;
         this.propertyValue = propertyValue;
     }

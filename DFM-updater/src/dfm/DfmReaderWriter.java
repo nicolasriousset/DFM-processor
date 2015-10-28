@@ -161,7 +161,7 @@ public class DfmReaderWriter {
         else
             throw new DfmReaderWriterException("Unsupported extension for " + inputFile.getAbsolutePath());
         FileUtils.deleteQuietly(outputFile);
-        Process process = new ProcessBuilder("C:\\Borland\\CBuilder4\\Bin\\convert.exe", inputFile.getAbsolutePath()).start();
+        Process process = new ProcessBuilder("C:\\Borland\\CBuilder6\\Bin\\convert.exe", inputFile.getAbsolutePath()).start();
         process.waitFor();
         return outputFile;
     }
