@@ -1,7 +1,6 @@
 package main;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
@@ -10,11 +9,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.PatternFilenameFilter;
 
 import conversion.AConversionRule;
-import conversion.AddInclude;
-import conversion.FixSpreadSetSetParams;
-import conversion.RenameProperty;
+import conversion.ChangePropertyValue;
+import conversion.RemoveProperty;
 import conversion.ReplaceCode;
-import conversion.condition.IsContainingCode;
 import cpp.CppClass;
 import cpp.CppClass.CppFile;
 import cpp.CppClassReaderWriter;
@@ -80,6 +77,7 @@ public class RhUiModernizer {
 
 	private boolean updateDfmObjects(DfmObject dfmObject, CppClass cppClass) {
 		ArrayList<AConversionRule> rules = new ArrayList<AConversionRule>();
+		rules.add(new RemoveProperty("TColoredGroupBox", "BorderColor"));
 		// rules.add(new RenameProperty("TfpSpread", "On_Click", "OnClick"));
 		
 		// rules.add(new CompositeRule(new ChangeObjectType("TComboBoxEx",

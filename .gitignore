@@ -45,3 +45,4 @@ Temporary Items
 RemoteSystemsTempFiles/
 DFM-updater/target/**
 .metadata/
+.recommenders/
